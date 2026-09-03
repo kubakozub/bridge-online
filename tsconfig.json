@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "types": [
+      "@cloudflare/workers-types",
+      "vite/client"
+    ],
+    "strict": true,
+    "noUncheckedIndexedAccess": false,
+    "noUnusedLocals": false,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": false,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "tests",
+    "scripts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "worker-configuration.d.ts"
+  ]
+}

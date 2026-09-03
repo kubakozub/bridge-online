@@ -1,0 +1,310 @@
+/*
+ * Cards and hands.
+ *
+ * Everything visual comes from tokens.css. The only local variables are geometry helpers:
+ *
+ *   --bo-card-w      width of one card, always derived from the --card-w clamp
+ *   --bo-card-h      its height, at the sprite's 240x336 aspect
+ *   --bo-fan-overlap fraction of a card left visible in a fan (from --hand-overlap)
+ *   --bo-i           the card's index in the fan, set inline by <Hand>
+ *   --bo-lift-dir    which way a vertical fan lifts a playable card (1 = right, -1 = left)
+ *   --bo-deal-x/y    where the dealing animation flies in from
+ */
+
+/* ---------------------------------------------------------------------------
+ * Sprite host
+ * ------------------------------------------------------------------------- */
+
+/* The symbols only ever render through <use>, so the host itself never paints. */
+.bo-card-sprite {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Sizes - one scale, shared by a lone card and by a whole fan
+ * ------------------------------------------------------------------------- */
+
+.bo-card,
+.bo-hand {
+  --bo-card-w: var(--card-w);
+  --bo-card-h: calc(var(--bo-card-w) * 336 / 240);
+}
+
+.bo-card--xs,
+.bo-hand--xs {
+  --bo-card-w: calc(var(--card-w) * 0.5);
+}
+
+.bo-card--sm,
+.bo-hand--sm {
+  --bo-card-w: calc(var(--card-w) * 0.72);
+}
+
+.bo-card--md,
+.bo-hand--md {
+  --bo-card-w: var(--card-w);
+}
+
+.bo-card--lg,
+.bo-hand--lg {
+  --bo-card-w: calc(var(--card-w) * 1.25);
+}
+
+/* ---------------------------------------------------------------------------
+ * The card
+ * ------------------------------------------------------------------------- */
+
+.bo-card {
+  display: block;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  inline-size: var(--bo-card-w);
+  block-size: var(--bo-card-h);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  appearance: none;
+  /* Matches the rx=16 of the 240-wide card artwork, so the shadow hugs the corners. */
+  border-radius: calc(var(--bo-card-w) * 16 / 240);
+  box-shadow: var(--shadow-card);
+  touch-action: manipulation;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    filter var(--dur-fast) var(--ease-out);
+}
+
+.bo-card__face {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+.bo-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* --- Playable ------------------------------------------------------------ */
+
+.bo-card.is-playable {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .bo-card.is-playable:hover {
+    transform: translateY(-12%);
+    box-shadow: var(--shadow-card-lifted);
+  }
+}
+
+.bo-card.is-playable:focus-visible {
+  transform: translateY(-12%);
+  box-shadow: var(--shadow-card-lifted);
+}
+
+/* A vertical fan lifts sideways instead; the seat component flips --bo-lift-dir for the
+   hand on the other side of the table. */
+@media (hover: hover) {
+  .bo-hand--vertical .bo-card.is-playable:hover {
+    transform: translateX(calc(var(--bo-lift-dir, 1) * 14%));
+  }
+}
+
+.bo-hand--vertical .bo-card.is-playable:focus-visible {
+  transform: translateX(calc(var(--bo-lift-dir, 1) * 14%));
+}
+
+/* --- Illegal right now --------------------------------------------------- */
+
+.bo-card.is-dimmed {
+  filter: grayscale(0.55) opacity(0.55);
+  pointer-events: none;
+  cursor: default;
+}
+
+/* Keyboard users still reach dimmed cards through the roving fan; keep the ring readable. */
+.bo-card.is-dimmed:focus-visible {
+  filter: none;
+  outline: 3px solid var(--accent);
+}
+
+/* --- Selected ------------------------------------------------------------ */
+
+.bo-card.is-selected {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-card-lifted);
+}
+
+/* ---------------------------------------------------------------------------
+ * Suit glyph
+ * ------------------------------------------------------------------------- */
+
+.bo-suit {
+  display: inline-block;
+  inline-size: 1em;
+  block-size: 1em;
+  vertical-align: -0.125em;
+}
+
+.bo-suit--mono {
+  color: inherit;
+}
+
+.bo-suit--nt {
+  inline-size: auto;
+  block-size: auto;
+  vertical-align: baseline;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+}
+
+/* ---------------------------------------------------------------------------
+ * The fan
+ * ------------------------------------------------------------------------- */
+
+.bo-hand {
+  --bo-fan-overlap: var(--hand-overlap);
+  --bo-z-lift: 60;
+  display: block;
+  min-inline-size: 0;
+}
+
+.bo-hand__cards {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bo-hand--horizontal .bo-hand__cards {
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  /* Head-room for the lift and the focus ring, so neither is clipped. */
+  padding-block: calc(var(--bo-card-h) * 0.18) var(--s-1);
+  padding-inline: var(--s-1);
+}
+
+.bo-hand--vertical .bo-hand__cards {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--s-1);
+  padding-inline: calc(var(--bo-card-w) * 0.2);
+}
+
+.bo-hand__item {
+  position: relative;
+  flex: 0 0 auto;
+  z-index: calc(var(--bo-i, 0) + 1);
+}
+
+/* The hovered or focused card must sit above the cards fanned on top of it. */
+.bo-hand__item:hover,
+.bo-hand__item:focus-within {
+  z-index: var(--bo-z-lift);
+}
+
+/* --- Overlap ------------------------------------------------------------- */
+
+.bo-hand--horizontal .bo-hand__item + .bo-hand__item {
+  margin-inline-start: calc(var(--bo-card-w) * (var(--bo-fan-overlap) - 1));
+}
+
+.bo-hand--vertical .bo-hand__item + .bo-hand__item {
+  margin-block-start: calc(var(--bo-card-h) * (var(--bo-fan-overlap) - 1));
+}
+
+/* A little air where one suit ends and the next begins - the cheapest revoke prevention there is. */
+.bo-hand--horizontal .bo-hand__item + .bo-hand__item--gap {
+  margin-inline-start: calc(var(--bo-card-w) * (var(--bo-fan-overlap) - 1) + var(--s-2));
+}
+
+.bo-hand--vertical .bo-hand__item + .bo-hand__item--gap {
+  margin-block-start: calc(var(--bo-card-h) * (var(--bo-fan-overlap) - 1) + var(--s-2));
+}
+
+/* --- How tight the fan is ------------------------------------------------
+ * A vertical fan overlaps the taller axis, so it needs a smaller fraction to occupy the same
+ * run of screen. Face-down and compact fans tighten further. Ordered longest-selector-last,
+ * because these combine. */
+
+.bo-hand--vertical {
+  --bo-fan-overlap: calc(var(--hand-overlap) * 0.7);
+}
+
+.bo-hand--compact {
+  --bo-fan-overlap: calc(var(--hand-overlap) * 0.62);
+}
+
+.bo-hand--facedown {
+  --bo-fan-overlap: calc(var(--hand-overlap) * 0.4);
+}
+
+.bo-hand--vertical.bo-hand--compact {
+  --bo-fan-overlap: calc(var(--hand-overlap) * 0.46);
+}
+
+.bo-hand--vertical.bo-hand--facedown,
+.bo-hand--compact.bo-hand--facedown {
+  --bo-fan-overlap: calc(var(--hand-overlap) * 0.3);
+}
+
+.bo-hand--vertical.bo-hand--compact.bo-hand--facedown {
+  --bo-fan-overlap: calc(var(--hand-overlap) * 0.24);
+}
+
+/* Backs are never touched, so they get no lift head-room either. */
+.bo-hand--facedown .bo-hand__cards {
+  padding: var(--s-1);
+}
+
+/* ---------------------------------------------------------------------------
+ * Dealing
+ *
+ * Cards fly out from the middle of the table into the fan. The seat component points them the
+ * right way by setting --bo-deal-x / --bo-deal-y on an ancestor, and starts the animation by
+ * adding `is-dealing` (or `bo-hand--dealing`) anywhere above the hand.
+ * ------------------------------------------------------------------------- */
+
+@keyframes bo-deal {
+  from {
+    opacity: 0;
+    transform: translate(var(--bo-deal-x, 0%), var(--bo-deal-y, -170%)) scale(0.86) rotate(-5deg);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.bo-hand--vertical {
+  --bo-deal-x: -170%;
+  --bo-deal-y: 0%;
+}
+
+.is-dealing .bo-hand__item,
+.bo-hand--dealing .bo-hand__item {
+  animation: bo-deal var(--dur-slow) var(--ease-out) both;
+  animation-delay: calc(var(--bo-i, 0) * 26ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-dealing .bo-hand__item,
+  .bo-hand--dealing .bo-hand__item {
+    animation: none;
+  }
+
+  .bo-card {
+    transition: none;
+  }
+}

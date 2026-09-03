@@ -1,0 +1,20 @@
+# Nazwy plikow w /assets zawieraja hash tresci, wiec sa z definicji niezmienne — mimo to
+# przegladarka pytala o nie serwer przy KAZDYM wejsciu (max-age=0, must-revalidate).
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/cards/*
+  Cache-Control: public, max-age=604800
+
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+/favicon-mono.svg
+  Cache-Control: public, max-age=604800
+
+/og-image.png
+  Cache-Control: public, max-age=604800
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

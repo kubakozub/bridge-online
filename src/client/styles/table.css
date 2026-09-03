@@ -1,0 +1,730 @@
+/*
+ * Table furniture: the felt, the nameplates and the trick area.
+ *
+ * Shared by TableFelt.tsx, SeatPlate.tsx and TrickArea.tsx. Every colour, radius, shadow, duration
+ * and size comes from tokens.css - nothing here is a literal colour. Sizes are derived from
+ * --card-w (itself a clamp), so the whole table scales from a 360px phone to a 1440px desktop
+ * without a single fixed pixel width.
+ */
+
+/* --------------------------------------------------------------------------
+ * Shared helpers
+ * ----------------------------------------------------------------------- */
+
+.bo-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------------------------------------------------------
+ * TableFelt
+ * ----------------------------------------------------------------------- */
+
+.bo-felt {
+  position: relative;
+  z-index: var(--z-table);
+  width: 100%;
+  max-width: 100%;
+  /* The table is the one element that must never produce a sideways scrollbar. */
+  overflow: hidden;
+  padding: var(--s-2);
+  background: var(--felt-1);
+  font-family: var(--font-ui);
+  color: var(--text-1);
+}
+
+.bo-felt__rail {
+  border-radius: var(--r-xl);
+  padding: clamp(var(--s-2), 1.4vw, var(--s-4));
+  background: linear-gradient(155deg, var(--felt-rail-hi), var(--felt-rail) 42%, var(--felt-rail-hi));
+  box-shadow: var(--shadow-panel);
+}
+
+.bo-felt__surface {
+  position: relative;
+  display: grid;
+  gap: var(--s-2);
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  grid-template-rows: minmax(0, auto) minmax(0, 1fr) minmax(0, auto);
+  grid-template-areas:
+    '.    top     .'
+    'left center  right'
+    '.    bottom  .';
+  min-height: calc(var(--card-h) * 3.1);
+  /* Padding liczony takze z wysokosci — przy 1366x768 samo 2vw dawalo 27 px
+     u gory i u dolu, czyli 54 px zabrane recе gracza. */
+  padding: clamp(var(--s-2), min(2vw, 1.6vh), var(--s-5));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  background:
+    radial-gradient(115% 80% at 50% 16%, var(--felt-3), rgb(0 0 0 / 0) 62%),
+    var(--felt-2);
+  box-shadow: var(--shadow-inset-felt);
+}
+
+.bo-felt__area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-width: 0;
+  min-height: 0;
+}
+
+.bo-felt__area--top {
+  grid-area: top;
+}
+
+.bo-felt__area--bottom {
+  grid-area: bottom;
+}
+
+.bo-felt__area--left {
+  grid-area: left;
+}
+
+.bo-felt__area--right {
+  grid-area: right;
+}
+
+.bo-felt__center {
+  grid-area: center;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--s-2);
+}
+
+.bo-felt__plate,
+.bo-felt__hand {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.bo-felt__hand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Phones: the side hands collapse to thin card-back strips and the middle stays square. */
+@media (max-width: 719px) {
+  .bo-felt {
+    padding: var(--s-1);
+  }
+
+  .bo-felt__rail {
+    border-radius: var(--r-lg);
+    padding: var(--s-2);
+  }
+
+  .bo-felt__surface {
+    gap: var(--s-1);
+    padding: var(--s-2);
+    min-height: calc(var(--card-h) * 2.6);
+  }
+
+  .bo-felt__area--left .bo-felt__hand,
+  .bo-felt__area--right .bo-felt__hand {
+    width: calc(var(--card-w) * 0.44);
+    overflow: hidden;
+  }
+
+  .bo-felt__center {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * SeatPlate
+ * ----------------------------------------------------------------------- */
+
+.bo-seat {
+  position: relative;
+  z-index: var(--z-hud);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  background: var(--surface-glass);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  line-height: 1.25;
+  box-shadow: var(--shadow-panel);
+  transition:
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+}
+
+.bo-seat[data-empty='true'] {
+  border-style: dashed;
+  border-color: var(--border-strong);
+  background: var(--surface-glass);
+}
+
+.bo-seat[data-you='true'] {
+  border-color: var(--seat-you);
+}
+
+.bo-seat[data-vul='true'] {
+  border-color: var(--vul-yes);
+  background: var(--surface-2);
+  background: color-mix(in srgb, var(--vul-yes) 14%, var(--surface-2));
+}
+
+.bo-seat[data-turn='true'] {
+  border-color: var(--seat-active-ring);
+  box-shadow:
+    var(--shadow-panel),
+    0 0 0 2px var(--seat-active-ring);
+  animation: bo-seat-pulse 1.8s var(--ease-in-out) infinite;
+}
+
+@keyframes bo-seat-pulse {
+  0%,
+  100% {
+    box-shadow:
+      var(--shadow-panel),
+      0 0 0 2px var(--seat-active-ring);
+  }
+
+  50% {
+    box-shadow:
+      var(--shadow-panel),
+      0 0 0 6px var(--accent-quiet);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bo-seat[data-turn='true'] {
+    animation: none;
+  }
+}
+
+/* Seat letter badge, with the countdown arc drawn around it. */
+.bo-seat__badge {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-weight: 700;
+  font-size: var(--text-sm);
+}
+
+.bo-seat[data-you='true'] .bo-seat__badge {
+  background: var(--accent-quiet);
+  color: var(--accent);
+}
+
+.bo-seat__arc {
+  position: absolute;
+  inset: -3px;
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+.bo-seat__arc-track,
+.bo-seat__arc-value {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.bo-seat__arc-track {
+  stroke: var(--border-strong);
+  stroke-width: 2;
+}
+
+.bo-seat__arc-value {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  transition: stroke-dashoffset var(--dur-base) linear;
+}
+
+.bo-seat__arc[data-low='true'] .bo-seat__arc-value {
+  stroke: var(--danger);
+}
+
+.bo-seat__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.bo-seat__line {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  min-width: 0;
+}
+
+.bo-seat__dot {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--r-pill);
+  background: var(--text-3);
+}
+
+.bo-seat__dot[data-conn='online'] {
+  background: var(--success);
+}
+
+.bo-seat__dot[data-conn='idle'] {
+  background: var(--warning);
+}
+
+.bo-seat__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.bo-seat__name--empty {
+  color: var(--text-3);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.bo-seat__tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.bo-seat__tag {
+  padding: 0 var(--s-1);
+  border-radius: var(--r-sm);
+  background: var(--surface-3);
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.bo-seat__tag--you {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 700;
+}
+
+.bo-seat__tag--bot {
+  background: var(--surface-1);
+  color: var(--info);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.bo-seat__tag--role {
+  background: var(--accent-quiet);
+  color: var(--accent);
+}
+
+.bo-seat__tag--vul {
+  background: var(--vul-yes);
+  color: var(--card-face);
+}
+
+.bo-seat__dealer {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--r-pill);
+  color: var(--accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+.bo-seat__clock {
+  flex: none;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-xs);
+}
+
+.bo-seat__clock[data-low='true'] {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.bo-seat__tricks {
+  flex: none;
+  min-width: 1.75rem;
+  padding: 0 var(--s-1);
+  border-radius: var(--r-sm);
+  background: var(--surface-3);
+  color: var(--text-1);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.bo-seat__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+.bo-seat__action,
+.bo-seat__remove {
+  appearance: none;
+  cursor: pointer;
+  font: inherit;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-1);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.bo-seat__action {
+  padding: var(--s-1) var(--s-3);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.bo-seat__action--primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 700;
+}
+
+.bo-seat__action:hover {
+  border-color: var(--accent);
+  background: var(--surface-3);
+}
+
+.bo-seat__action--primary:hover {
+  background: var(--accent-hover);
+}
+
+.bo-seat__remove {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  color: var(--text-2);
+  font-size: var(--text-base);
+  line-height: 1;
+}
+
+.bo-seat__remove:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.bo-seat__action:focus-visible,
+.bo-seat__remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 719px) {
+  .bo-seat {
+    gap: var(--s-1);
+    padding: var(--s-1);
+    font-size: var(--text-xs);
+  }
+
+  .bo-seat__badge {
+    width: 1.6rem;
+    height: 1.6rem;
+    font-size: var(--text-xs);
+  }
+
+  .bo-seat[data-position='left'] .bo-seat__tags,
+  .bo-seat[data-position='right'] .bo-seat__tags {
+    display: none;
+  }
+
+  .bo-seat[data-position='left'] .bo-seat__name,
+  .bo-seat[data-position='right'] .bo-seat__name {
+    max-width: 5rem;
+  }
+
+  .bo-seat[data-empty='true'] {
+    flex-wrap: wrap;
+    border-radius: var(--r-lg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * TrickArea
+ * ----------------------------------------------------------------------- */
+
+.bo-trick-area {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-family: var(--font-ui);
+  color: var(--text-1);
+}
+
+.bo-trick {
+  position: relative;
+  z-index: var(--z-cards);
+  width: min(100%, calc(var(--card-w) * 4.2));
+  aspect-ratio: 1 / 1;
+}
+
+/* The trump suit, ghosted into the felt underneath the cards. */
+.bo-trick__trump {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-1);
+  opacity: 0.08;
+  font-family: var(--font-display);
+  font-size: calc(var(--card-w) * 1.6);
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bo-trick__trump[data-strain='H'],
+.bo-trick__trump[data-strain='D'] {
+  color: var(--suit-heart);
+  opacity: 0.16;
+}
+
+.bo-trick__slot {
+  --tx: 0px;
+  --ty: 0px;
+  --rot: 0deg;
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: block;
+  width: var(--card-w);
+  border-radius: calc(var(--card-w) * 0.067);
+  background: var(--card-face);
+  box-shadow: var(--shadow-card);
+  transform: translate(-50%, -50%) translate(var(--tx), var(--ty)) rotate(var(--rot));
+  /* Sam zjazd. Pauza na odczytanie lewy NIE jest tu opoznieniem: przejscie i tak
+     nie ruszyloby na elemencie, ktory powstaje juz w stanie koncowym. Pauze
+     odmierza useTable i dopiero po niej ustawia data-winner. */
+  transition:
+    transform var(--dur-trick) var(--ease-in-out),
+    opacity var(--dur-trick) var(--ease-in-out);
+}
+
+.bo-trick__slot[data-pos='bottom'] {
+  --ty: calc(var(--card-h) * 0.6);
+  --rot: 2deg;
+}
+
+.bo-trick__slot[data-pos='top'] {
+  --ty: calc(var(--card-h) * -0.6);
+  --rot: -2deg;
+}
+
+.bo-trick__slot[data-pos='left'] {
+  --tx: calc(var(--card-w) * -0.74);
+  --rot: -6deg;
+}
+
+.bo-trick__slot[data-pos='right'] {
+  --tx: calc(var(--card-w) * 0.74);
+  --rot: 6deg;
+}
+
+.bo-trick__card {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
+}
+
+/* The completed trick slides off toward whoever won it. */
+.bo-trick[data-winner='bottom'] .bo-trick__slot {
+  --tx: 0px;
+  --ty: calc(var(--card-h) * 1.5);
+  opacity: 0;
+}
+
+.bo-trick[data-winner='top'] .bo-trick__slot {
+  --tx: 0px;
+  --ty: calc(var(--card-h) * -1.5);
+  opacity: 0;
+}
+
+.bo-trick[data-winner='left'] .bo-trick__slot {
+  --tx: calc(var(--card-w) * -2.4);
+  --ty: 0px;
+  opacity: 0;
+}
+
+.bo-trick[data-winner='right'] .bo-trick__slot {
+  --tx: calc(var(--card-w) * 2.4);
+  --ty: 0px;
+  opacity: 0;
+}
+
+.bo-trick__winner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-pill);
+  background: var(--surface-glass);
+  color: var(--text-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-panel);
+  pointer-events: none;
+}
+
+/* --- board panel (shown between tricks) --- */
+
+.bo-board {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-2);
+  max-width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  background: var(--surface-glass);
+  box-shadow: var(--shadow-panel);
+  text-align: center;
+}
+
+.bo-board__number {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--text-1);
+}
+
+.bo-board__body {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.bo-board__vul {
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.bo-board__vul-quadrant {
+  fill: var(--vul-no);
+  stroke: var(--surface-1);
+  stroke-width: 1.5;
+}
+
+.bo-board__vul-quadrant[data-vul='true'] {
+  fill: var(--vul-yes);
+}
+
+.bo-board__vul-letter {
+  fill: var(--card-face);
+  font-family: var(--font-ui);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.bo-board__facts {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: var(--s-1) var(--s-3);
+  margin: 0;
+  font-size: var(--text-sm);
+  text-align: left;
+}
+
+.bo-board__facts dt {
+  color: var(--text-3);
+}
+
+.bo-board__facts dd {
+  margin: 0;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.bo-board__contract {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  color: var(--accent);
+}
+
+@media (max-width: 719px) {
+  .bo-board {
+    padding: var(--s-2) var(--s-3);
+    gap: var(--s-1);
+  }
+
+  .bo-board__body {
+    gap: var(--s-2);
+  }
+
+  .bo-board__facts {
+    font-size: var(--text-xs);
+    gap: 2px var(--s-2);
+  }
+
+  .bo-board__vul {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+/* --- Niskie ekrany: caly stol ma sie zmiescic z wlasna reka -----------------
+   Skarga uzytkownika: "w momencie w ktorym zaczalem licytacje jest za duzo
+   rzeczy i nie mieszcza sie na ekranie". Ograniczamy wysokosc sukna do kadru,
+   zamiast pozwalac mu rosnac z trescia i wypychac reke pod krawedz. */
+@media (max-height: 860px) {
+  .bo-felt__surface {
+    min-height: 0;
+    gap: var(--s-1);
+  }
+
+  .bo-felt__area {
+    padding-block: 0;
+  }
+}

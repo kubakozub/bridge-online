@@ -1,0 +1,1056 @@
+/*
+ * app.css - the shell everything else sits inside: the page itself, the top bar, the two-column
+ * stage, the side rail (a bottom sheet on a phone), the shared buttons and inputs, and the lobby.
+ *
+ * Every colour, radius, shadow, duration and step of the spacing scale comes from tokens.css.
+ * There is not one literal colour in this file, so re-skinning the product is a tokens-only change.
+ *
+ * Mobile first. The single breakpoint that matters is 900px, where the rail stops being a sheet
+ * pinned to the bottom of the screen and becomes a column beside the table.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Page + utilities
+ * ------------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  background: var(--felt-1);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Visible to a screen reader, invisible to everyone else. */
+.bo-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * One focus ring for the whole shell. Deliberately weaker in specificity than the ring the card
+ * fan and the bidding box define for themselves, and app.css loads before those sheets, so a
+ * focused card still gets its own treatment.
+ */
+.bo-app :focus-visible {
+  outline: 2px solid var(--seat-active-ring);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+.bo-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--felt-1);
+  color: var(--text-1);
+}
+
+/* ---------------------------------------------------------------------------
+ * Buttons, inputs, chips
+ * ------------------------------------------------------------------------ */
+
+.bo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 2.75rem;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface-3);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.bo-btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--accent);
+}
+
+.bo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bo-btn--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.bo-btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.bo-btn--ghost {
+  background: transparent;
+  border-color: var(--border-subtle);
+  color: var(--text-2);
+}
+
+.bo-btn--ghost:hover:not(:disabled) {
+  background: var(--surface-2);
+  color: var(--text-1);
+}
+
+.bo-btn--sm {
+  min-height: 2.25rem;
+  padding: 0 var(--s-3);
+  font-size: var(--text-sm);
+}
+
+.bo-label {
+  display: block;
+  margin-bottom: var(--s-1);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.bo-input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+}
+
+.bo-input:disabled,
+.bo-input[readonly] {
+  color: var(--text-2);
+}
+
+.bo-input--code {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.bo-code {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+
+.bo-tag {
+  margin: 0;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  background: var(--accent-quiet);
+  color: var(--text-1);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Connection lamp. Colour is carried by the dot so the text stays readable at any status. */
+.bo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin: 0;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+
+.bo-pill__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--r-pill);
+  background: var(--text-3);
+}
+
+.bo-pill[data-status='open'] .bo-pill__dot {
+  background: var(--success);
+}
+
+.bo-pill[data-status='connecting'] .bo-pill__dot,
+.bo-pill[data-status='reconnecting'] .bo-pill__dot {
+  background: var(--warning);
+}
+
+.bo-pill[data-status='closed'] .bo-pill__dot {
+  background: var(--danger);
+}
+
+/* ---------------------------------------------------------------------------
+ * Top bar
+ * ------------------------------------------------------------------------ */
+
+.bo-topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-hud);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  padding-top: calc(var(--s-2) + env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-glass);
+  backdrop-filter: blur(10px);
+}
+
+.bo-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.bo-topbar__code,
+.bo-topbar__board {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.bo-topbar__leave {
+  margin-left: auto;
+}
+
+.bo-topbar__prefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
+/* ---------------------------------------------------------------------------
+ * Stage
+ * ------------------------------------------------------------------------ */
+
+.bo-stage {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--s-3);
+  width: 100%;
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: var(--s-3);
+  /* Room for the rail, which is pinned to the bottom of the viewport on a phone. */
+  padding-bottom: calc(4.5rem + var(--s-4) + env(safe-area-inset-bottom, 0px));
+}
+
+.bo-stage--single {
+  place-content: center;
+  padding-bottom: var(--s-6);
+}
+
+.bo-table-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  min-width: 0;
+}
+
+/*
+ * Tryb pelnoekranowy stolu dotyczy TYLKO ekranow od 900px w gore.
+ *
+ * Na telefonie panel boczny stoi zadokowany u dolu, a pudelko licytacyjne ladzie pod stolem,
+ * wiec tresc MUSI sie przewijac. Wymuszenie 100dvh z `overflow: hidden` obcieloby ja zamiast
+ * pozwolic przewinac — czyli dokladnie odwrotnie niz o to chodzi.
+ */
+@media (min-width: 900px) {
+  /* ---------------------------------------------------------------------------
+   * Ekran stolu na pelna wysokosc okna
+   *
+   * Stol jest jedynym ekranem, ktory ma sie MIESCIC, a nie przewijac: gracz musi widziec
+   * naraz cztery rece, lewe i wlasne karty. Domyslny uklad (`align-content: start`,
+   * `max-width: 90rem`) zostawial pas pustego sukna pod stolem i spychal reke pod krawedz.
+   * Tutaj kazdy element lancucha dostaje `min-height: 0`, zeby flex/grid mogly kurczyc
+   * zawartosc zamiast rozpychac dokument.
+   * ------------------------------------------------------------------------ */
+
+  .bo-app--table {
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .bo-app--table .bo-stage {
+    /* minmax(0, 1fr), nie `auto`: wiersz `auto` przyjmuje naturalna wysokosc zawartosci i NIE
+       kurczy sie, wiec kolumna ze stolem przerastala okno o kilkadziesiat pikseli i pasek akcji
+       lezacy pod nia byl obcinany przez `overflow: hidden`. */
+    grid-template-rows: minmax(0, 1fr);
+    align-content: stretch;
+    /* Musi byc jawnie: breakpoint 900px ustawia `align-items: start`, przez co kolumna ze stolem
+       dostawala wysokosc wlasnej zawartosci zamiast wysokosci wiersza. */
+    align-items: stretch;
+    min-height: 0;
+    max-width: none;
+    overflow: hidden;
+  }
+
+  /*
+   * Rozmiar karty liczony z WYSOKOSCI SUKNA, nie z wysokosci okna.
+   *
+   * Liczenie z `vh` bylo blednym przyblizeniem: to samo okno zostawia sukno raz wyzsze, raz
+   * nizsze, zaleznie od tego czy jest pasek kontraktu, ile ma wierszy pasek akcji i czy panel
+   * boczny stoi obok czy pod spodem. Przy wiekszych kartach naturalna wysokosc stolu przerastala
+   * wiersz gridu, a `overflow: hidden` obcinal to, co wystawalo. Kontener CSS mierzy realnie
+   * dostepne miejsce, wiec stol dopasowuje sie sam.
+   *
+   * Skad 12.5cqh: w pionie sukno musi zmiescic dwie rece (gora i dol) z plakietkami oraz pole
+   * lewy posrodku, czyli okolo 4.4 wysokosci karty plus ~90px na plakietki. Przy proporcji
+   * karty 1:1.4 daje to sufit rowny mniej wiecej 12.5% wysokosci sukna.
+   */
+  .bo-app--table .bo-felt {
+    container-type: size;
+    container-name: felt;
+  }
+
+  /*
+   * Wysokosc karty = (wysokosc sukna - staly narzut) / 6.6.
+   *
+   * Sam procent wysokosci (np. 12.5cqh) nie dziala, bo plakietki graczy maja STALA wysokosc
+   * (~44px kazda). Na 1440x900 zostawialo to 23px luzu miedzy lewa a wlasna reka, ale na
+   * 1366x768 ten sam procent dawal juz -3px, czyli nachodzenie: narzut zjada proporcjonalnie
+   * wiecej im nizszy ekran. Odjecie go przed podzialem sprawia, ze odstep jest podobny wszedzie.
+   *
+   * 130px to dwie plakietki plus odstepy siatki; dzielnik 6.6 pochodzi z pomiaru — przy 6.16
+   * karty stykaly sie z lewa na 1440x900.
+   */
+  .bo-app--table .bo-felt__rail {
+    --card-w: clamp(40px, min(9vw, calc((100cqh - 130px) / 6.6)), 128px);
+  }
+
+  /*
+   * Pudelko licytacyjne SKALUJE SIE do srodka stolu, zamiast rosnac w dol.
+   *
+   * Na pelnym ekranie sukno ma z gory ustalona wysokosc, wiec drabinka 7x5 z trzema przyciskami
+   * pod spodem po prostu wjezdzala na wlasna reke i chowala PAS/KONTRE. Zamiast dobierac
+   * wysokosc przyciskow do rozdzielczosci (co i tak by pekalo przy innym pasku akcji), caly
+   * stos dostaje `1fr` i dzieli miedzy wiersze dokladnie tyle miejsca, ile zostalo.
+   */
+  /*
+   * W trakcie licytacji karty schodza o oczko nizej, zeby drabinka dostala te ~60px, ktore
+   * uwalniaja sie na obu recach. Bez tego przyciski odzywek wychodzily 21px wysokie — mieszcza
+   * sie, ale w takie cos sie nie celuje. Priorytety sa rozne w roznych fazach: przy licytacji
+   * patrzy sie na pudelko, a rece przeciwnikow to i tak same rewersy.
+   */
+  .bo-app--table .bo-felt__rail:has(.bo-centre-auction) {
+    --card-w: clamp(36px, min(9vw, calc((100cqh - 130px) / 9)), 128px);
+  }
+
+  .bo-app--table .bo-centre-auction {
+    height: 100%;
+    /* Bez tego zapis licytacji rozciagal srodkowa kolumne na ~580px i stol w fazie licytacji
+       rozpychal sie na cale okno, mimo ze pudelko odzywek ma 26rem. Rownanie obu do tej samej
+       szerokosci trzyma stol w tych samych proporcjach przez cale rozdanie. */
+    max-width: min(100%, 26rem);
+    min-height: 0;
+    justify-content: start;
+  }
+
+  .bo-app--table .bo-centre-auction .bo-bidbox {
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* `flex: 1` na wierszach, nie tylko na pudelku — inaczej pudelko rosnie, a wiersze zostaja
+     przy naturalnej wysokosci i cala nadwyzka zbiera sie jako pusty pas pod REKONTRA. */
+  .bo-app--table .bo-centre-auction .bo-bidbox__row {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .bo-app--table .bo-centre-auction .bo-bid {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .bo-app--table .bo-table-column {
+    min-height: 0;
+  }
+
+  /* Sukno zjada cale wolne miejsce, ktore zostalo po naglowku i pasku akcji. */
+  .bo-app--table .bo-felt {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .bo-app--table .bo-felt__rail,
+  .bo-app--table .bo-felt__surface {
+    height: 100%;
+    min-height: 0;
+  }
+
+  /*
+   * Stol zwiera sie do zawartosci zamiast rozpychac na cala szerokosc okna.
+   *
+   * Srodkowa kolumna byla `1fr`, wiec zgarniala CALY nadmiar: przy 1440px sukno mialo 1031px,
+   * z czego lewa zajmowala 361px, a rece boczne stały odepchniete o ~190px od srodka. Polowa
+   * szerokosci stolu byla pusta, a cztery rece nie czytaly sie jako jeden uklad wokol lewy.
+   * Kolumny dopasowane do zawartosci + wysrodkowanie zbijaja to w zwarty stol; nadmiar zostaje
+   * na zewnatrz drewnianej krawedzi, czyli tam gdzie i tak jest tlo pokoju.
+   */
+  .bo-app--table .bo-felt__surface {
+    /*
+     * Srodkowy tor ma DEFINITYWNY sufit, a nie `auto` ani `fit-content()`.
+     *
+     * Powod jest konkretny: max-content srodkowej kolumny w fazie licytacji wynosi ~417 000px
+     * (zagniezdzone siatki `1fr` w pudelku odzywek degeneruja sie przy liczeniu szerokosci
+     * wewnetrznej). Wszystko, co pyta o zawartosc — `auto`, `fit-content`, zwykle
+     * shrink-to-fit — dostaje ta liczbe i rozciaga stol na cale okno. Sztywne 30rem omija
+     * caly ten rachunek.
+     *
+     * Sufit skaluje sie SZEROKOSCIA KARTY, bo wachlarz 13 kart zajmuje okolo 5 jej szerokosci:
+     * sztywne 30rem sciskalo reke na 1920x1080 (450px zamiast naturalnych 564px). Podloga 24rem
+     * pilnuje, zeby przy malych kartach zostalo miejsce na drabinke odzywek.
+     */
+    grid-template-columns: minmax(0, auto) minmax(0, max(24rem, calc(var(--card-w) * 5.4))) minmax(0, auto);
+    justify-content: center;
+  }
+
+  .bo-app--table .bo-felt__rail {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+}
+
+
+/* Contract badge that expands into the full auction record. */
+.bo-hud {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.bo-hud__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  align-self: flex-start;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  cursor: pointer;
+}
+
+.bo-hud__toggle:hover {
+  border-color: var(--accent);
+}
+
+.bo-hud__hint {
+  color: var(--text-2);
+  font-size: var(--text-xs);
+}
+
+.bo-hud__auction {
+  max-width: 22rem;
+  padding: var(--s-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  background: var(--surface-1);
+}
+
+.bo-hud__auction[hidden] {
+  display: none;
+}
+
+/* Everything under the felt: the bidding box, the turn hint, and the small action buttons. */
+/*
+ * On a phone this bar carries the bidding box, which is a 7x5 ladder - too tall to pin over the
+ * table without burying the hand you are bidding from. So it flows normally here and the player
+ * scrolls once; the hand sits directly above it, so both are on screen together.
+ * From 900px up the ladder moves into the middle of the felt and this bar only holds the small
+ * play-phase buttons, which are worth sticking to the bottom edge.
+ */
+.bo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-3);
+  padding-block: var(--s-2);
+}
+
+.bo-actions__wait {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.bo-actions__row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/*
+ * Auction cluster in the middle of the felt: the running auction record with the bidding box
+ * directly beneath it, so a player can read the auction, see their own hand and bid without
+ * moving their eyes off the table.
+ */
+.bo-centre-auction {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-width: 0;
+}
+
+.bo-centre-auction__wait {
+  margin: 0;
+  padding: var(--s-2) var(--s-4);
+  border-radius: var(--r-pill);
+  background: var(--surface-glass);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+/*
+ * Inside the felt the ladder has to stay small enough that the four hands are still visible
+ * around it - a bid you make blind is worse than a bid you scroll for.
+ */
+.bo-centre-auction .bo-bidbox {
+  max-width: min(100%, 26rem);
+  padding: var(--s-2);
+}
+
+.bo-centre-auction .bo-bid {
+  min-height: max(1.9rem, calc(var(--card-w) * 0.4));
+  font-size: var(--text-sm);
+}
+
+/* ---------------------------------------------------------------------------
+ * Banners
+ * ------------------------------------------------------------------------ */
+
+.bo-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: 0;
+  padding: var(--s-3);
+  border-block: 1px solid var(--border-subtle);
+  background: var(--surface-2);
+  color: var(--text-1);
+  font-size: var(--text-sm);
+}
+
+.bo-banner--error {
+  background: color-mix(in srgb, var(--danger) 18%, var(--surface-1));
+  border-color: var(--danger);
+}
+
+.bo-banner--ask {
+  background: var(--accent-quiet);
+  border-color: var(--accent);
+}
+
+.bo-banner__actions {
+  display: flex;
+  gap: var(--s-2);
+}
+
+/* ---------------------------------------------------------------------------
+ * The card that sits in the middle of the felt between phases
+ * ------------------------------------------------------------------------ */
+
+.bo-centre-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 24rem;
+  margin: 0 auto;
+  padding: var(--s-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  background: var(--surface-glass);
+  text-align: center;
+}
+
+.bo-centre-card--standalone {
+  box-shadow: var(--shadow-panel);
+}
+
+.bo-centre-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.bo-centre-card__text {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--text-sm);
+}
+
+.bo-centre-card__meta {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--text-xs);
+}
+
+/* ---------------------------------------------------------------------------
+ * The rail: a bottom sheet on a phone, a column on a desktop
+ * ------------------------------------------------------------------------ */
+
+.bo-rail {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-hud);
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-strong);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-panel);
+}
+
+.bo-rail__bar {
+  display: flex;
+  gap: var(--s-1);
+  padding: var(--s-2);
+  padding-bottom: calc(var(--s-2) + env(safe-area-inset-bottom, 0px));
+}
+
+.bo-rail__tablist {
+  display: flex;
+  flex: 1;
+  gap: var(--s-1);
+}
+
+.bo-rail__tab {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 2.75rem;
+  padding: 0 var(--s-3);
+  border: 1px solid transparent;
+  border-radius: var(--r-md);
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-ui);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bo-rail__tab:hover {
+  background: var(--surface-2);
+  color: var(--text-1);
+}
+
+.bo-rail__tab[aria-selected='true'] {
+  background: var(--surface-3);
+  border-color: var(--border-subtle);
+  color: var(--text-1);
+}
+
+.bo-rail__tab--plain {
+  flex: none;
+}
+
+.bo-rail__badge {
+  min-width: 1.25rem;
+  padding: 0 var(--s-1);
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  line-height: 1.25rem;
+}
+
+.bo-rail__panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(60vh, 32rem);
+  overflow: hidden auto;
+  padding: 0 var(--s-2) var(--s-2);
+}
+
+/* Closed sheet: only the tab bar shows. The desktop rule below re-opens it. */
+.bo-rail[data-open='false'] .bo-rail__panel {
+  display: none;
+}
+
+.bo-rail__tabpanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.bo-rail__tabpanel[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------------
+ * Lobby
+ * ------------------------------------------------------------------------ */
+
+.bo-app--lobby {
+  background:
+    radial-gradient(90rem 40rem at 50% -20%, var(--felt-2), transparent 70%),
+    var(--felt-1);
+}
+
+.bo-lobby {
+  flex: 1;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  padding: var(--s-4) var(--s-3) var(--s-6);
+}
+
+.bo-hero {
+  padding: var(--s-5) 0 var(--s-4);
+  text-align: center;
+}
+
+.bo-hero__title {
+  margin: 0 0 var(--s-3);
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.bo-hero__lead {
+  max-width: 34rem;
+  margin: 0 auto;
+  color: var(--text-2);
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+
+.bo-lobby__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-3);
+  margin-top: var(--s-4);
+}
+
+.bo-lobby-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  background: var(--surface-1);
+  box-shadow: var(--shadow-panel);
+}
+
+.bo-lobby-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+
+.bo-lobby-card__hint {
+  margin: 0;
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.bo-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+.bo-form__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--s-3);
+}
+
+.bo-form__cell {
+  display: block;
+  min-width: 0;
+}
+
+.bo-share {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding: var(--s-3);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-md);
+  background: var(--accent-quiet);
+}
+
+.bo-share__lead {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.bo-share__row {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+}
+
+.bo-share__code {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+.bo-howto {
+  margin: 0;
+  padding-left: var(--s-5);
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.bo-howto li + li {
+  margin-top: var(--s-2);
+}
+
+.bo-lobby__foot {
+  padding: var(--s-4) var(--s-3) calc(var(--s-4) + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-3);
+  font-size: var(--text-xs);
+  text-align: center;
+}
+
+.bo-lobby__foot p {
+  margin: 0;
+}
+
+/* A two-option radio group drawn as a pill switch. */
+.bo-toggle {
+  display: inline-flex;
+  gap: var(--s-1);
+  margin: 0;
+  padding: var(--s-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-pill);
+  background: var(--surface-2);
+}
+
+.bo-toggle__option {
+  display: inline-flex;
+}
+
+.bo-toggle__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+.bo-toggle__label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem;
+  padding: 0 var(--s-3);
+  border-radius: var(--r-pill);
+  color: var(--text-2);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bo-toggle__radio:checked + .bo-toggle__label {
+  background: var(--accent);
+  color: var(--text-on-accent);
+}
+
+.bo-toggle__radio:focus-visible + .bo-toggle__label {
+  outline: 2px solid var(--seat-active-ring);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phones: how the shell allots the felt's space
+ *
+ * The felt's side columns are content-sized (`minmax(0, auto)` in table.css), so at 360px a pair of
+ * long names on West and East swallows the whole width and the trick area collapses to nothing.
+ * Capping the two side columns hands that width back to the middle of the table; the nameplates
+ * already truncate, and their tags are hidden at this size anyway.
+ *
+ * The plates above and below then have only the centre column to live in, which is too narrow for
+ * one row of "name + role + clock + tricks" - so those two wrap instead of overflowing. Both rules
+ * are scoped to the app shell and add properties table.css does not set here.
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 719px) {
+  .bo-app .bo-felt__area--left,
+  .bo-app .bo-felt__area--right {
+    max-width: 5.5rem;
+  }
+
+  .bo-app .bo-felt__area--top .bo-seat,
+  .bo-app .bo-felt__area--bottom .bo-seat {
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: 2px;
+    border-radius: var(--r-lg);
+  }
+
+  .bo-app .bo-felt__area--top .bo-seat__body,
+  .bo-app .bo-felt__area--bottom .bo-seat__body {
+    flex-basis: 100%;
+    align-items: center;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 40rem: the lobby can afford two columns of cards
+ * ------------------------------------------------------------------------ */
+
+@media (min-width: 40rem) {
+  .bo-hero__title {
+    font-size: var(--text-3xl);
+  }
+
+  .bo-lobby__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bo-lobby-card--wide {
+    grid-column: 1 / -1;
+  }
+
+  .bo-form__row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * 900px: the rail leaves the bottom of the screen and becomes a column
+ * ------------------------------------------------------------------------ */
+
+@media (min-width: 900px) {
+  .bo-stage {
+    grid-template-columns: minmax(0, 1fr) 22rem;
+    align-items: start;
+    padding-bottom: var(--s-4);
+  }
+
+  /*
+   * The action bar deliberately stays in normal flow here. Pinning it to the bottom edge made
+   * it float over the near player's nameplate, and it buys nothing: from 900px up the bidding
+   * box lives in the middle of the felt, so all that is left in this bar are small buttons.
+   */
+
+  .bo-stage--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bo-rail {
+    position: sticky;
+    top: calc(3.5rem + var(--s-3));
+    inset-inline: auto;
+    bottom: auto;
+    max-height: calc(100dvh - 6rem);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+
+  .bo-rail__bar {
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  /* The sheet's collapsed state is a phone affordance only. */
+  .bo-rail[data-open='false'] .bo-rail__panel {
+    display: flex;
+  }
+
+  .bo-rail__panel {
+    max-height: none;
+    flex: 1;
+    padding: var(--s-2);
+  }
+}
+
+/* --- Niskie ekrany: reszta powietrza wokol stolu ---------------------------
+   Po scisnieciu sukna i pudelka odzywek zostawalo jeszcze ok. 70-110 px
+   przewijania na laptopie — same odstepy miedzy HUD-em, stolem i paskiem
+   akcji. Tutaj je odbieramy, zeby cala partia miescila sie w jednym kadrze. */
+@media (max-height: 860px) {
+  .bo-stage,
+  .bo-table-column {
+    gap: var(--s-2);
+  }
+
+  .bo-actions {
+    gap: var(--s-2);
+    padding-block: var(--s-1);
+  }
+}
