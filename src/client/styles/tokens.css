@@ -130,19 +130,31 @@
   --z-toast: 60;
 }
 
+/*
+ * Motyw jasny jest DOMYSLNY.
+ *
+ * Blok wyzej (`:root, [data-theme='felt']`) zostaje pelna baza — definiuje KAZDY token, takze
+ * te niezwiazane z motywem (typografia, odstepy, promienie, ruch, uklad). Gdyby zamienic go
+ * miejscami z jasnym, polowa tokenow zostalaby bez wartosci, bo blok jasny niesie same kolory.
+ *
+ * Dlatego jasny wchodzi jako nadpisanie przy KAZDYM stanie procz jawnie wybranego ciemnego:
+ * `:root:not([data-theme='felt'])` ma wyzsza specyficznosc niz `:root` z bazy, wiec wygrywa,
+ * gdy atrybutu nie ma w ogole (pierwsze malowanie, zanim ruszy JS) albo gdy wybrano `daylight`.
+ */
+:root:not([data-theme='felt']),
 [data-theme='daylight'] {
   color-scheme: light;
 
-  --felt-1: #e8ece7;
-  --felt-2: #1f6b52;
-  --felt-3: #24795c;
-  --felt-rail: #7a5236;
-  --felt-rail-hi: #9a6b48;
+  --felt-1: #eef1ec;
+  --felt-2: #34926b;
+  --felt-3: #3da878;
+  --felt-rail: #b07f4f;
+  --felt-rail-hi: #c99a68;
 
   --surface-1: #ffffff;
-  --surface-2: #f4f6f4;
-  --surface-3: #e7ebe8;
-  --surface-glass: rgb(255 255 255 / 0.9);
+  --surface-2: #f5f7f4;
+  --surface-3: #e8ece7;
+  --surface-glass: rgb(255 255 255 / 0.92);
   --border-subtle: rgb(16 32 28 / 0.12);
   --border-strong: rgb(16 32 28 / 0.24);
 
@@ -154,16 +166,31 @@
   --accent: #b8801a;
   --accent-hover: #a2700f;
   --accent-quiet: rgb(184 128 26 / 0.14);
+  --info: #2f7fb5;
+  --success: #2f8f5b;
+  --warning: #c9822a;
+  --danger: #c0392f;
 
   --seat-you: #b8801a;
   --seat-partner: #227a54;
   --seat-opponent: #3d5f8a;
+  --seat-active-ring: #b8801a;
 
-  --card-edge: rgb(10 20 16 / 0.22);
+  --vul-yes: #c0392f;
+  --vul-no: #2f8f5b;
+
+  /* Biala karta na jasnym suknie NIE wydzieli sie cieniem — musi ja odciac krawedz.
+     Stad .32 zamiast .22: przy slabszej wartosci karty zlewaly sie z blatem. */
+  --card-face: #ffffff;
+  --card-edge: rgb(16 32 28 / 0.32);
+  --card-back: #1d5f86;
+  --card-back-ink: rgb(255 255 255 / 0.62);
+
+  /* Na jasnym tle ciezki cien robi sie brudny — krotszy i slabszy niz w motywie ciemnym. */
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.16), 0 6px 14px rgb(0 0 0 / 0.12);
   --shadow-card-lifted: 0 4px 8px rgb(0 0 0 / 0.2), 0 14px 30px rgb(0 0 0 / 0.18);
   --shadow-panel: 0 10px 28px rgb(0 0 0 / 0.18);
-  --shadow-inset-felt: inset 0 0 100px rgb(0 0 0 / 0.22);
+  --shadow-inset-felt: inset 0 0 100px rgb(0 0 0 / 0.16);
 }
 
 /*

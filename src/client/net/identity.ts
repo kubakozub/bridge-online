@@ -44,7 +44,7 @@ const PREFS_KEY = 'bo.prefs';
 export const MAX_NAME_LENGTH = 24;
 
 export const DEFAULT_PREFS: LocalPrefs = {
-  theme: 'felt',
+  theme: 'daylight',
   deck: 'classic',
   sound: true,
   hints: false,

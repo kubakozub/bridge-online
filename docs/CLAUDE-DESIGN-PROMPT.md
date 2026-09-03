@@ -1,120 +1,135 @@
-# Mega prompt dla Claude Design — komplet grafiki do „Bridge Online”
+# Mega prompt dla Claude Design — komplet grafiki do „Bridge Online” (wersja jasna)
 
 > **Jak używać:** skopiuj wszystko poniżej linii `--- POCZĄTEK PROMPTU ---` i wklej do Claude
-> Design jako jedną wiadomość. Prompt jest samowystarczalny — zawiera brief produktowy, kierunek
-> artystyczny, tokeny kolorów zgodne z kodem, pełny manifest zasobów oraz **kontrakt
+> Design jako jedną wiadomość. Prompt jest samowystarczalny — zawiera brief, punkt odniesienia,
+> kierunek artystyczny, tokeny kolorów zgodne z kodem, pełny manifest zasobów i **kontrakt
 > integracyjny** (ID symboli, `viewBox`, nazwy zmiennych CSS). Dzięki temu wynik wchodzi do
 > repozytorium bez przerabiania kodu.
 >
-> Jeśli chcesz podzielić pracę na mniejsze zlecenia — każda sekcja „PAKIET n” jest samodzielnym
-> promptem; wtedy wklej **Sekcje 1–4** (kontekst + kierunek + tokeny + kontrakt techniczny)
-> plus wybrany pakiet.
+> Chcesz podzielić pracę na mniejsze zlecenia? Każdy „PAKIET n” jest samodzielny — wklej wtedy
+> **Sekcje 1–5** plus wybrany pakiet.
+>
+> Gra działa na żywo pod [brydz.uk](https://brydz.uk) — designer może ją otworzyć i zobaczyć, co
+> dokładnie zastępuje.
 
 ---
 
 --- POCZĄTEK PROMPTU ---
 
-Jesteś dyrektorem artystycznym i ilustratorem. Zaprojektuj **komplet grafiki wektorowej** dla
-gotowej, działającej aplikacji webowej **Bridge Online** — brydża porównawczego dla dwóch osób
-grających zdalnie. Poniżej masz pełny kontekst, sztywne ograniczenia techniczne i manifest
-zasobów. Trzymaj się ich dosłownie: grafika ma wpaść do istniejącego kodu bez zmian w kodzie.
+Jesteś dyrektorem artystycznym i ilustratorem. Zaprojektuj **komplet oryginalnej grafiki
+wektorowej** dla działającej aplikacji **Bridge Online** — brydża dla dwóch osób grających
+zdalnie (gra na żywo: brydz.uk). Poniżej masz kontekst, punkt odniesienia, sztywne ograniczenia
+techniczne i manifest zasobów. Trzymaj się ich dosłownie: grafika ma wejść do istniejącego kodu
+bez zmian w kodzie.
 
 ## SEKCJA 1 — Brief produktowy
 
 **Co to jest.** Przeglądarkowa gra w brydża sportowego. Dwie osoby w dwóch różnych miastach
 wchodzą na ten sam link, siadają przy wirtualnym stole, a wolne krzesła obsadzają roboty.
-Rozgrywa się licytację (bidding box), a potem 13 lew. Wynik liczony jest punktacją turniejową.
+Rozgrywa się licytację (pudełko odzywek 7×5), a potem 13 lew. Wynik liczony punktacją turniejową.
 
 **Kto gra.** Dwie grupy naraz:
-- Osoby po 50–70 roku życia, znające brydża z klubu i ze stołu fizycznego. Grają na laptopie
-  lub tablecie, często w okularach, czasem przy słabym świetle. **Czytelność jest ważniejsza
-  niż efekt.**
+- Osoby 50–70 lat, znające brydża z klubu i ze stołu fizycznego. Grają na laptopie lub tablecie,
+  często w okularach. **Czytelność jest ważniejsza niż efekt.**
 - Osoby 25–40 lat uczące się brydża, grające na telefonie w pionie (360–430 px szerokości).
 
-**Konkurencja / punkt odniesienia.** 247bridge.com i BBO (Bridge Base Online) są funkcjonalne,
-ale wyglądają jak oprogramowanie z 2006 roku: jaskrawa zieleń, gradienty z Web 2.0, przypadkowa
-typografia. Naszą przewagą ma być wygląd **spokojnego, drogiego klubu brydżowego** — a nie
-kasyna i nie „gierki mobilnej”.
+**Ekran, który projektujesz.** Stół wypełnia całe okno i **nie przewija się** — cztery ręce, pole
+lewy i własne karty muszą być widoczne naraz. To ostry budżet miejsca: każdy piksel wydany na
+ozdobnik jest zabrany kartom.
 
-**Emocja docelowa.** Cichy pokój, ciemnozielone sukno, mosiądz, drewno, dobre światło znad stołu.
-Skupienie, nie ekscytacja. Zero hazardu, zero żetonów, zero neonów, zero cartoonowych maskotek.
+## SEKCJA 2 — Punkt odniesienia i czym mamy go pobić
 
-## SEKCJA 2 — Kierunek artystyczny
+Punktem odniesienia jest **247bridge.com**. Zamawiający lubi tę stronę: jest jasna, czytelna od
+pierwszej sekundy, przyjazna i nie wymaga nauki interfejsu. **To zachowujemy.**
+
+**Nie kopiuj niczego z tamtego serwisu** — ani logo, ani układu, ani rysunku kart, ani
+kolorystyki marki. Punkt odniesienia to poziom *odczucia*, nie materiał źródłowy. Wszystko, co
+oddasz, ma być oryginalne.
+
+Przewaga, którą masz zbudować — pięć konkretów, każdy sprawdzalny:
+
+1. **Rysunek kart zamiast skalowanej bitmapy.** Karty mają być czystym wektorem, ostrym przy
+   każdej wielkości, z prawdziwym układem oczek i figurami rysowanymi, a nie literą w ramce.
+2. **Talia czterokolorowa jako równorzędna opcja.** Mylenie kierów z karami to najczęstszy błąd
+   w brydżu online. Obie wersje mają wyglądać na zaprojektowane, nie na wariant awaryjny.
+3. **Hierarchia zamiast jednolitego tła.** Sukno, pole lewy i strefa własnej ręki mają się od
+   siebie odróżniać wartością tonalną, żeby wzrok wiedział, gdzie patrzeć — bez linii i ramek.
+4. **Stany, nie tylko kształty.** Karta legalna, nielegalna, wskazana kursorem i właśnie zagrana
+   to cztery różne rzeczy. Zaprojektuj je świadomie (Pakiet 5).
+5. **Spokojna typografia.** Bez konturów, cieni rzucanych pod literami i efektu „chrom”. Wartości
+   kart czytelne przy 28 px wysokości karty.
+
+**Emocja docelowa.** Jasny pokój w słoneczny dzień, świeże sukno, czysty stół, dobre światło.
+Przyjaźnie i pogodnie, ale bez infantylności. Zero hazardu, zero żetonów, zero neonów, zero
+cartoonowych maskotek.
+
+## SEKCJA 3 — Kierunek artystyczny
 
 **Rób tak:**
-- Płaski wektor z **jednym** subtelnym źródłem światła z góry. Cienie miękkie, nisko kontrastowe.
-- Formy geometryczne, precyzyjne, z wyraźną siatką. Grubości linii spójne w całym zestawie
-  (2 px i 2.5 px w układzie odniesienia 240×336).
-- Paleta wąska i stonowana — patrz Sekcja 3. Akcent mosiężny stosuj oszczędnie, tylko tam gdzie
-  ma prowadzić wzrok (aktywne krzesło, główny przycisk).
-- Heraldyka i typografia zamiast ilustracji rodzajowej. Figury (W, D, K) mają być **sylwetkami
-  z godła** — korona, diadem, pióropusz — a nie portretami postaci.
-- Wszystko musi być czytelne przy **28 px wysokości** (karta na telefonie w bocznej ręce).
-  Testuj każdy zasób zmniejszony do 15% zanim uznasz go za skończony.
+- Jasna, wysokokontrastowa paleta — patrz Sekcja 4. Motyw jasny jest teraz **domyślny**.
+- Płaski wektor z **jednym** miękkim światłem z góry. Cienie delikatne i krótkie: na jasnym tle
+  ciężki cień natychmiast robi się brudny.
+- Formy geometryczne, precyzyjne, spójne grubości linii (2 px i 2.5 px w układzie 240×336).
+- Krawędzie kart muszą działać na jasnym tle: białej karty na jasnym suknie nie wydzieli cień —
+  potrzebna jest cienka, wyraźna krawędź o wartości ciemniejszej od sukna.
+- Wszystko czytelne przy **28 px wysokości karty** (karta na telefonie w bocznej ręce). Testuj
+  każdy zasób zmniejszony do 15%, zanim uznasz go za skończony.
 
 **Nie rób tak:**
-- Bez gradientów tęczowych, bez blasku/glow, bez skosów, bez faz 3D, bez tekstur „drewna” z
-  fotografii, bez efektu szkła.
-- Bez cieni rzucanych pod wieloma kątami — jedno światło, jeden kierunek.
-- Bez cienkich linii poniżej 1.5 px w układzie 240×336 (znikną na telefonie).
+- Bez gradientów tęczowych, blasku, skosów, faz 3D, fotograficznych tekstur drewna, efektu szkła.
+- Bez cieni pod wieloma kątami — jedno światło, jeden kierunek.
+- Bez linii cieńszych niż 1.5 px w układzie 240×336 (znikną na telefonie).
 - Bez tekstu w grafice poza wartościami kart (2–10, W, D, K, A) i logotypem.
-- **Bez naśladowania istniejących marek** — nie kopiuj logo ani stylistyki 247bridge, BBO,
-  Bicycle, Piatnik ani żadnego realnego wydawcy kart.
+- Bez naśladowania jakiejkolwiek istniejącej marki kart lub serwisu brydżowego.
 
-**Znaki kolorów kart.** Domyślnie talia dwukolorowa (pik i trefl czarne, kier i karo czerwone).
-Musi jednak działać też tryb **czterokolorowy** (karo niebieskie, trefl zielony) — to realna
-funkcja dostępności, bo mylenie kierów z karami jest najczęstszym błędem w brydżu online.
-Dlatego kolor pobierasz **wyłącznie** ze zmiennych CSS z Sekcji 3, nigdy nie wpisujesz go na
-sztywno w ścieżkę.
+## SEKCJA 4 — Tokeny kolorów (skopiuj wartości dokładnie)
 
-## SEKCJA 3 — Tokeny kolorów (skopiuj wartości dokładnie)
-
-Motyw ciemny „felt” (domyślny):
+Motyw **jasny „daylight” — domyślny**:
 
 ```
---felt-1        #0d2b22   tło strony, najgłębsze sukno
---felt-2        #12382c   blat stołu
---felt-3        #174535   pole lewy (wyżej położone sukno)
---felt-rail     #3a2317   drewniana krawędź stołu
---felt-rail-hi  #5c3a26   rozjaśnienie krawędzi
+--felt-1        #eef1ec   tło strony (pokój wokół stołu)
+--felt-2        #34926b   blat stołu, zielone sukno
+--felt-3        #3da878   pole lewy, sukno rozjaśnione
+--felt-rail     #b07f4f   drewniana krawędź stołu (jasny dąb)
+--felt-rail-hi  #c99a68   rozjaśnienie krawędzi od strony światła
 
---surface-1     #10201c   panele
---surface-2     #16302a
---surface-3     #1e3f37
+--surface-1     #ffffff   panele
+--surface-2     #f5f7f4
+--surface-3     #e8ece7
 
---text-1        #f2f6f3   tekst główny
---text-2        #b9c9c1   tekst drugorzędny
---text-3        #7d938a   tekst wyłączony
+--text-1        #16211d   tekst główny
+--text-2        #46554f   tekst drugorzędny
+--text-3        #78877f   tekst wyłączony
 
---accent        #f0c05a   mosiądz — kolor akcji
---info          #6cb8e6
---success       #64c98a
---warning       #e8a13c
---danger        #e2604f
+--accent        #b8801a   mosiądz — kolor akcji
+--info          #2f7fb5
+--success       #2f8f5b
+--warning       #c9822a
+--danger        #c0392f
 
---card-face     #fdfdfb   awers karty
---card-edge     rgba(10,20,16,.35)  krawędź karty
---card-back     #123c5a   rewers karty
---card-back-ink rgba(255,255,255,.55)
+--card-face     #ffffff   awers karty
+--card-edge     rgba(16,32,28,.32)   krawędź karty — MUSI odcinać biel od sukna
+--card-back     #1d5f86   rewers karty
+--card-back-ink rgba(255,255,255,.62)
 
 --suit-spade    #16161d
 --suit-heart    #c8102e
---suit-diamond  #c8102e   (w trybie 4-kolorowym #1c62c4)
---suit-club     #16161d   (w trybie 4-kolorowym #157a45)
+--suit-diamond  #c8102e   (w talii czterokolorowej #1c62c4)
+--suit-club     #16161d   (w talii czterokolorowej #157a45)
 ```
 
-Motyw jasny „daylight” — dla grających w pełnym słońcu. Sukno `#1f6b52`, tło `#e8ece7`, tekst
-`#16211d`, akcent `#b8801a`. Zasoby mają działać w obu motywach; osiągasz to używając zmiennych,
-a nie projektując dwóch wersji.
+Motyw **ciemny „felt”** zostaje jako opcja wieczorna: sukno `#12382c`, tło `#0d2b22`, tekst
+`#f2f6f3`, akcent `#f0c05a`. Zasoby mają działać w obu — osiągasz to używając zmiennych, a nie
+projektując dwóch wersji.
 
 **Typografia w kodzie:** UI = Inter (400/500/600/700). Nagłówki i wartości kart = Source Serif 4
-(600/700). Jeśli w grafice potrzebujesz liter, **zamień je na krzywe** — pliki nie mogą zależeć
-od fontu zainstalowanego u gracza.
+(600/700). Jeśli w grafice potrzebujesz liter, **zamień je na krzywe** — pliki nie mogą zależeć od
+fontu zainstalowanego u gracza.
 
-## SEKCJA 4 — Kontrakt techniczny (naruszenie = grafika nie wejdzie do kodu)
+## SEKCJA 5 — Kontrakt techniczny (naruszenie = grafika nie wejdzie do kodu)
 
-1. **Format: SVG.** Bez PNG, bez JPG, bez rastrów osadzonych w SVG. Wyjątek: obraz OG do
-   udostępniania w social media (Pakiet 7) — tam PNG 1200×630.
+1. **Format: SVG.** Bez PNG, bez JPG, bez rastrów osadzonych w SVG. Wyjątek: obraz OG (Pakiet 7)
+   — tam PNG 1200×630.
 2. **Karty i godła oddajesz jako jeden sprite** — plik `sprite.svg` o strukturze:
    ```xml
    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
@@ -124,169 +139,168 @@ od fontu zainstalowanego u gracza.
      <symbol id="card-back" viewBox="0 0 240 336"> ... </symbol>
      <symbol id="suit-S" viewBox="0 0 100 100"> ... </symbol>
      <symbol id="suit-S-mono" viewBox="0 0 100 100"> ... </symbol>
-     ...
    </svg>
    ```
-3. **Identyfikatory symboli są sztywne.** `card-` + litera koloru + znak wartości:
+3. **Identyfikatory są sztywne.** `card-` + litera koloru + znak wartości:
    - kolory: `S` pik, `H` kier, `D` karo, `C` trefl
    - wartości: `2 3 4 5 6 7 8 9 T J Q K A` (`T` = dziesiątka, `J` = walet, `Q` = dama, `K` = król)
    - czyli 52 symbole: `card-S2` … `card-SA`, `card-H2` … `card-CA`
-   - dodatkowo: `card-back`, oraz `suit-S`/`suit-H`/`suit-D`/`suit-C` i ich warianty
-     `suit-S-mono` … (mono = wypełnienie `currentColor`, do przycisków i tabeli licytacji)
-4. **`viewBox` kart to dokładnie `0 0 240 336`** (proporcja 2.5 : 3.5). Rewers ten sam.
-   Godła kolorów: `0 0 100 100`, wyśrodkowane, wypełniające ~92% pola.
+   - dodatkowo `card-back` oraz `suit-S`/`suit-H`/`suit-D`/`suit-C` i warianty `suit-*-mono`
+     (mono = wypełnienie `currentColor`, do przycisków i tabeli licytacji)
+4. **`viewBox` kart to dokładnie `0 0 240 336`** (proporcja 2.5 : 3.5). Rewers ten sam. Godła
+   kolorów: `0 0 100 100`, wyśrodkowane, wypełniające ~92% pola.
 5. **Kolory tylko przez zmienne CSS z literalnym fallbackiem**, np.
-   `fill="var(--suit-heart, #c8102e)"`, `fill="var(--card-face, #fdfdfb)"`.
-   Sprite jest wklejany do DOM, więc zmienne ze strony zadziałają.
-6. **Zero `<style>`, zero `<script>`, zero `class`, zero `id` wewnątrz symboli** (poza `id`
-   samego `<symbol>`). Atrybuty prezentacji wpisujesz bezpośrednio w elementy.
+   `fill="var(--suit-heart, #c8102e)"`, `fill="var(--card-face, #ffffff)"`. Sprite jest wklejany
+   do DOM, więc zmienne ze strony zadziałają.
+6. **Zero `<style>`, `<script>`, `class` i `id` wewnątrz symboli** (poza `id` samego `<symbol>`).
+   Atrybuty prezentacji wpisujesz bezpośrednio w elementy.
 7. **Zero odwołań zewnętrznych** — żadnych `<image href="http...">`, żadnych `@font-face`.
-8. Ścieżki zoptymalizowane (współrzędne do 2 miejsc po przecinku). Cel: **cały sprite ≤ 180 KB**
-   przed kompresją.
-9. Każdy zasób poza sprite'em oddajesz jako osobny plik SVG o nazwie z manifestu, z `viewBox`
+8. Ścieżki zoptymalizowane (współrzędne do 2 miejsc po przecinku). Cel: **sprite ≤ 180 KB** przed
+   kompresją.
+9. Każdy zasób spoza sprite'a oddajesz jako osobny plik SVG o nazwie z manifestu, z `viewBox`
    podanym w manifeście i **bez** sztywnych `width`/`height`.
 
-Referencja: obecny, wygenerowany proceduralnie sprite leży w repo pod `public/cards/sprite.svg`,
-a stronę podglądu masz pod `/dev/cards.html`. Twoja wersja ma go zastąpić 1:1 — te same ID, ten
-sam `viewBox`, wyższa jakość rysunku.
+Referencja: obecny, generowany proceduralnie sprite leży w repo pod `public/cards/sprite.svg`, a
+strona podglądu pod `/dev/cards.html`. Twoja wersja ma go zastąpić 1:1 — te same ID, ten sam
+`viewBox`, wyższa jakość rysunku.
 
 ---
 
 ## PAKIET 1 — Talia (najważniejszy, zrób go najpierw)
 
-**1.1 Awersy blotek (2–10), 4 kolory = 36 kart.**
-Klasyczny układ oczek w siatce 3 kolumn × 7 rzędów. Dolna połowa oczek obrócona o 180°, tak jak
-na prawdziwej talii. Indeks w dwóch przeciwległych narożnikach: wartość + małe godło koloru,
-narożnik lewy górny i prawy dolny (obrócony). Indeks musi być czytelny, gdy widać tylko 22 px
-lewej krawędzi karty — tak leżą karty w rozwiniętym wachlarzu.
+**1.1 Blotki 2–10, cztery kolory = 36 kart.** Klasyczny układ oczek w siatce 3 kolumn × 7 rzędów.
+Dolna połowa oczek obrócona o 180°, jak na prawdziwej talii. Indeks w dwóch przeciwległych
+narożnikach: wartość + małe godło. Indeks musi być czytelny, gdy widać tylko 22 px lewej krawędzi
+karty — tak leżą karty w rozwiniętym wachlarzu.
 
-**1.2 Figury: walet (J), dama (Q), król (K) — 12 kart.**
-Sylwetki heraldyczne, symetryczne względem środka karty (górna połowa odbita w dolnej), w ramce.
-Walet = pióropusz / fleur-de-lis. Dama = diadem z trzema kamieniami. Król = korona z pięcioma
-zębami. Sylwetka w kolorze koloru karty, ramka cienka, tło awersu czyste. Każdy kolor dostaje
-**inny detal wypełnienia**, żeby figury nie były nierozróżnialne w skali — ale ta sama sylwetka
-bazowa.
+**1.2 Figury W, D, K — 12 kart.** To miejsce, w którym wygrywamy z punktem odniesienia. Sylwetki
+heraldyczne, symetryczne względem środka karty (górna połowa odbita w dolnej), w cienkiej ramce.
+Walet = pióropusz, dama = diadem z trzema kamieniami, król = korona z pięcioma zębami. Każdy kolor
+dostaje **inny detal wypełnienia**, żeby figury nie zlewały się w skali — ale ta sama sylwetka
+bazowa. Ma to wyglądać na rysowane, nie na literę w prostokącie.
 
-**1.3 Asy — 4 karty.**
-Duże, ozdobne godło na środku (≈120 px w układzie 240×336). As pik dostaje najbogatszą oprawę
-(tradycja), pozostałe skromniejszą.
+**1.3 Asy — 4 karty.** Duże, ozdobne godło na środku (≈120 px w układzie 240×336). As pik dostaje
+najbogatszą oprawę (tradycja), pozostałe skromniejszą.
 
-**1.4 Rewers `card-back`.**
-Wzór giloszowy: regularna, drobna plecionka w `--card-back-ink` na tle `--card-back`, z
-podwójną ramką i centralną rozetą z czterema godłami kolorów. Wzór ma być **bezszwowy w obrębie
-karty** i nie może dawać efektu mory przy zmniejszeniu do 30 px. Zaprojektuj **trzy warianty
-kolorystyczne** rewersu (granat, bordo, las) jako `card-back`, `card-back-crimson`,
-`card-back-forest` — gracz wybiera w ustawieniach.
+**1.4 Rewers `card-back`.** Wzór giloszowy: regularna, drobna plecionka w `--card-back-ink` na tle
+`--card-back`, z podwójną ramką i centralną rozetą z czterema godłami. Wzór bezszwowy w obrębie
+karty i **bez mory przy zmniejszeniu do 30 px**. Trzy warianty kolorystyczne: `card-back`,
+`card-back-crimson`, `card-back-forest`.
 
-**1.5 Godła kolorów** — `suit-S/H/D/C` + warianty `-mono`.
-Cztery klasyczne kształty, wyważone optycznie: przy tej samej wysokości mają wyglądać na tak
-samo „ciężkie”. Trefl to trzy koła + nóżka, pik to odwrócone serce z nóżką, karo to romb o
-lekko wklęsłych bokach, kier to serce o miękkim wcięciu.
+**1.5 Godła kolorów** — `suit-S/H/D/C` + warianty `-mono`. Cztery klasyczne kształty wyważone
+optycznie: przy tej samej wysokości mają wyglądać na tak samo „ciężkie”.
 
-## PAKIET 2 — Stół
+## PAKIET 2 — Stół (kluczowy dla wrażenia „jaśniej”)
 
 **2.1 `table-felt.svg`** (`viewBox="0 0 1600 1000"`) — blat: zaokrąglony prostokąt sukna
-`--felt-2` z delikatnym rozświetleniem radialnym u góry, otoczony drewnianą krawędzią
+`--felt-2` z delikatnym rozświetleniem radialnym u góry, otoczony jasną drewnianą krawędzią
 `--felt-rail` z rozjaśnieniem `--felt-rail-hi` od strony światła. Tekstura sukna jako bardzo
-subtelny szum wektorowy (drobne kreski o `opacity` ≤ 0.05), nie jako bitmapa.
+subtelny szum wektorowy (kreski o `opacity` ≤ 0.05), nie bitmapa.
 
-**2.2 `trick-well.svg`** (`viewBox="0 0 400 400"`) — wgłębienie na środku stołu, gdzie lądują
-cztery karty lewy: ledwie widoczny okrąg ciemniejszego sukna z miękkim cieniem wewnętrznym.
+**2.2 `trick-well.svg`** (`viewBox="0 0 400 400"`) — wgłębienie na środku, gdzie lądują cztery
+karty lewy. Na jasnym suknie to ma być **rozjaśnienie** (`--felt-3`), nie przyciemnienie —
+inaczej środek stołu zrobi się brudną plamą.
 
 **2.3 `vulnerability.svg`** (`viewBox="0 0 100 100"`) — klasyczny romb podzielony na cztery
-ćwiartki (N, E, S, W). Ćwiartka strony „po partii” ma być czerwona `--danger`, „przed partią”
-zielona. Oddaj **cztery warianty**: `vul-none`, `vul-ns`, `vul-ew`, `vul-both`.
+ćwiartki (N, E, S, W). Ćwiartka strony „po partii” czerwona `--danger`, „przed partią” zielona.
+Cztery warianty: `vul-none`, `vul-ns`, `vul-ew`, `vul-both`.
 
 **2.4 `dealer-marker.svg`** (`viewBox="0 0 100 100"`) — okrągły mosiężny żeton z literą „R”
-(rozdający), litera zamieniona na krzywe.
+(rozdający), litera na krzywych.
 
 ## PAKIET 3 — Gracze przy stole
 
-**3.1 Awatary robotów — 3 sztuki**, `robot-beginner.svg`, `robot-intermediate.svg`,
+**3.1 Awatary robotów — 3 sztuki**: `robot-beginner.svg`, `robot-intermediate.svg`,
 `robot-advanced.svg`, `viewBox="0 0 120 120"`. Geometryczne, spokojne „głowy” w kole. Poziom
-sygnalizowany liczbą elementów i kolorem obwódki (zielony / mosiężny / niebieski), **nie**
-gwiazdkami i nie cartoonową mimiką. Mają wyglądać na partnera do brydża, nie na zabawkę.
+sygnalizowany liczbą elementów i kolorem obwódki, **nie** gwiazdkami i nie mimiką. Mają wyglądać
+na partnera do brydża, nie na zabawkę.
 
-**3.2 Awatary graczy — 8 abstrakcyjnych** `avatar-01.svg` … `avatar-08.svg`,
-`viewBox="0 0 120 120"`. Godła w kole: kotwica, liść, kompas, klepsydra, klucz, pióro, latarnia,
-żagiel. Jednokolorowe na tle `--surface-3`, przypisywane automatycznie po ID gracza.
+**3.2 Awatary graczy — 8 abstrakcyjnych** `avatar-01.svg` … `avatar-08.svg`
+(`viewBox="0 0 120 120"`). Godła w kole: kotwica, liść, kompas, klepsydra, klucz, pióro, latarnia,
+żagiel. Jednokolorowe na `--surface-3`.
 
-**3.3 `seat-ring.svg`** (`viewBox="0 0 200 200"`) — pierścień podświetlający krzesło gracza,
-którego jest kolej. Przerwa u dołu na łuk odliczania czasu (kod rysuje łuk sam przez
-`stroke-dashoffset`, ty dajesz tło pierścienia).
+**3.3 `seat-ring.svg`** (`viewBox="0 0 200 200"`) — pierścień podświetlający krzesło gracza, na
+którym jest kolej. Przerwa u dołu na łuk odliczania czasu (łuk rysuje kod).
 
-**3.4 `connection-dot.svg`** — trzy stany w jednym pliku jako trzy symbole:
-`conn-online`, `conn-away`, `conn-offline`.
+**3.4 `connection-dot.svg`** — trzy stany jako trzy symbole: `conn-online`, `conn-away`,
+`conn-offline`.
 
 ## PAKIET 4 — Licytacja
 
-**4.1 Pastylki licytacyjne.** Nie rysuj 35 osobnych plików — oddaj **jeden szablon**
-`bid-chip.svg` (`viewBox="0 0 120 84"`): zaokrąglony prostokąt z miejscem na cyfrę poziomu po
-lewej i godło koloru po prawej, plus warianty stanu jako osobne symbole: `bid-chip`,
-`bid-chip-disabled`, `bid-chip-hint`.
+**4.1 Pastylki licytacyjne.** Nie rysuj 35 plików — oddaj **jeden szablon** `bid-chip.svg`
+(`viewBox="0 0 120 84"`): zaokrąglony prostokąt z miejscem na cyfrę poziomu po lewej i godło po
+prawej, plus warianty stanu jako osobne symbole: `bid-chip`, `bid-chip-disabled`, `bid-chip-hint`.
+Uwaga: na jasnym tle pastylka nielegalna nie może po prostu zblednąć — musi mieć **inny kształt
+sygnału** (np. przekreślenie), bo sama jasność zginie.
 
-**4.2 Trzy przyciski specjalne**, `viewBox="0 0 160 84"`:
-`call-pass` (PAS, zielony), `call-double` (KONTRA — duże „X”, czerwony),
-`call-redouble` (REKONTRA — „XX”, niebieski). Litery na krzywych.
+**4.2 Trzy przyciski specjalne** (`viewBox="0 0 160 84"`): `call-pass` (PAS, zielony),
+`call-double` (KONTRA — duże „X”, czerwony), `call-redouble` (REKONTRA — „XX”, niebieski). Litery
+na krzywych.
 
-**4.3 `contract-plate.svg`** (`viewBox="0 0 240 90"`) — mosiężna tabliczka, na której kod
-wypisuje zawarty kontrakt (np. „4♠ ×  rozgrywa W”). Sama tabliczka, bez tekstu.
+**4.3 `contract-plate.svg`** (`viewBox="0 0 240 90"`) — mosiężna tabliczka, na której kod wypisuje
+zawarty kontrakt. Sama tabliczka, bez tekstu.
 
-## PAKIET 5 — Ikony interfejsu
+## PAKIET 5 — Stany karty (tego nie ma punkt odniesienia)
+
+Oddaj jako `card-states.svg` — cztery symbole nakładane na kartę, `viewBox="0 0 240 336"`:
+
+- `state-legal` — subtelne podniesienie: krótki cień pod dolną krawędzią, nic więcej.
+- `state-illegal` — wygaszenie czytelne także w skali szarości (nie sam spadek jasności).
+- `state-hover` — obrys w `--accent`, grubość 3 px, zaokrąglony jak karta.
+- `state-just-played` — jednorazowy błysk krawędzi, do animacji lądowania karty w lewie.
+
+Dodatkowo krótki opis (2–3 zdania), jak te stany mają się zachować w ruchu — kod dopisze
+animacje sam.
+
+## PAKIET 6 — Ikony interfejsu
 
 Jeden plik `icons.svg` ze sprite'em, `viewBox="0 0 24 24"`, linia 1.75 px, zaokrąglone końce,
 wypełnienie `currentColor`, ID zgodne z listą:
 
-`icon-copy`, `icon-check`, `icon-share`, `icon-settings`, `icon-chat`, `icon-score`,
-`icon-undo`, `icon-claim`, `icon-leave`, `icon-sit`, `icon-robot`, `icon-sound-on`,
-`icon-sound-off`, `icon-theme-dark`, `icon-theme-light`, `icon-deck-two`, `icon-deck-four`,
-`icon-help`, `icon-close`, `icon-chevron`, `icon-clock`, `icon-wifi`, `icon-wifi-off`,
-`icon-crown` (rozgrywający), `icon-eye` (dziadek), `icon-next-board`, `icon-history`,
-`icon-hcp` (punkty honorowe), `icon-menu`, `icon-link`.
+`icon-copy`, `icon-check`, `icon-share`, `icon-settings`, `icon-chat`, `icon-score`, `icon-undo`,
+`icon-claim`, `icon-leave`, `icon-sit`, `icon-robot`, `icon-sound-on`, `icon-sound-off`,
+`icon-theme-dark`, `icon-theme-light`, `icon-deck-two`, `icon-deck-four`, `icon-help`,
+`icon-close`, `icon-chevron`, `icon-clock`, `icon-wifi`, `icon-wifi-off`, `icon-crown`
+(rozgrywający), `icon-eye` (dziadek), `icon-next-board`, `icon-history`, `icon-hcp`, `icon-menu`,
+`icon-link`.
 
-## PAKIET 6 — Marka
+## PAKIET 7 — Marka i udostępnianie
 
-**6.1 `logo-full.svg`** (`viewBox="0 0 480 120"`) — sygnet + logotyp „Bridge Online”.
-Sygnet: cztery godła kolorów ułożone w formę mostu / łuku — most jest tu dosłowną i trafną
-metaforą (bridge + dwoje ludzi w dwóch miejscach połączonych łukiem). Logotyp złożony
-z Source Serif 4 zamienionego na krzywe.
+**7.1 `logo-full.svg`** (`viewBox="0 0 480 120"`) — sygnet + logotyp „Bridge Online”. Sygnet:
+cztery godła ułożone w formę mostu / łuku — most to dosłowna i trafna metafora (bridge + dwoje
+ludzi w dwóch miejscach połączonych łukiem). Logotyp z Source Serif 4 zamienionego na krzywe.
 
-**6.2 `logo-mark.svg`** (`viewBox="0 0 120 120"`) — sam sygnet, do awatara i nagłówka.
+**7.2 `logo-mark.svg`** (`viewBox="0 0 120 120"`) — sam sygnet.
 
-**6.3 `favicon.svg`** (`viewBox="0 0 32 32"`) — maksymalne uproszczenie sygnetu; musi być
-rozpoznawalny przy 16 px. Dodatkowo `favicon-mono.svg` na jednolitym tle dla trybu ciemnego.
+**7.3 `favicon.svg`** (`viewBox="0 0 32 32"`) — maksymalne uproszczenie sygnetu, rozpoznawalne
+przy 16 px. Dodatkowo `favicon-mono.svg` na jednolitym tle.
 
-**6.4 `empty-table.svg`** (`viewBox="0 0 400 300"`) — ilustracja pustego stanu „Czekamy na
-drugiego gracza”: dwa krzesła po przeciwnych stronach stołu, jedno puste. Spokojna, jednobarwna,
-z akcentem mosiężnym. Bez tekstu.
+**7.4 `empty-table.svg`** (`viewBox="0 0 400 300"`) — pusty stan „Czekamy na drugiego gracza”: dwa
+krzesła po przeciwnych stronach stołu, jedno puste. Spokojna, jednobarwna, bez tekstu.
 
-## PAKIET 7 — Udostępnianie
+**7.5 `og-image.png`** — 1200×630 PNG, jedyny raster w zestawie. Jasne sukno, sygnet, hasło
+„Brydż online dla dwojga” i wachlarz czterech kart.
 
-**7.1 `og-image.png`** — 1200×630 PNG. Ciemne sukno, sygnet, hasło „Brydż online dla dwojga”
-i wachlarz czterech kart. Jedyny raster w całym zestawie.
+## SEKCJA 6 — Jak oddajesz pracę
 
-**7.2 `qr-frame.svg`** (`viewBox="0 0 300 380"`) — ozdobna ramka pod kod QR z linkiem do stołu,
-z miejscem na sześcioznakowy kod pokoju pod spodem.
+1. Zacznij od **Pakietu 1**. Pokaż arkusz kontrolny: wszystkie 52 karty w siatce w trzech skalach
+   — 96 px, 52 px i 28 px wysokości — na tle `--felt-2`. Dopiero po akceptacji rób resztę.
+2. Dla każdego pakietu podaj listę plików, ID symboli, `viewBox` i rozmiar po optymalizacji.
+3. Na koniec oddaj arkusz przeglądowy `docs/design-sheet.svg` z całym zestawem.
 
-## SEKCJA 5 — Jak oddajesz pracę
+## SEKCJA 7 — Kryteria akceptacji (sprawdź sam przed oddaniem)
 
-1. Zacznij od **Pakietu 1**, pokaż mi arkusz kontrolny: wszystkie 52 karty w siatce w trzech
-   skalach — 96 px, 52 px i 28 px wysokości — na tle `--felt-2`. Dopiero po akceptacji rób resztę.
-2. Dla każdego pakietu podaj: listę plików, ID symboli, `viewBox`, rozmiar po optymalizacji.
-3. Na koniec oddaj jeden arkusz przeglądowy `docs/design-sheet.svg` z całym zestawem.
-
-## SEKCJA 6 — Kryteria akceptacji (sprawdź sam przed oddaniem)
-
-- [ ] 52 karty + rewers + 8 godeł mają **dokładnie** ID i `viewBox` z Sekcji 4.
+- [ ] 52 karty + rewers + 8 godeł mają **dokładnie** ID i `viewBox` z Sekcji 5.
 - [ ] Każdy kolor pochodzi ze zmiennej CSS z fallbackiem; przełączenie na talię czterokolorową
-      zmienia tylko karo i trefl i nie psuje niczego innego.
+      zmienia wyłącznie karo i trefl.
 - [ ] Wartość i kolor karty da się odczytać z samego narożnika przy 28 px wysokości karty.
-- [ ] Kier i karo są rozróżnialne w skali szarości (test: usuń kolor — kształty muszą wystarczyć).
-- [ ] Sprite waży ≤ 180 KB, nie zawiera `<script>`, `<style>`, `class`, `@font-face` ani
-      odwołań zewnętrznych.
+- [ ] Biała karta odcina się od jasnego sukna **bez** polegania na cieniu.
+- [ ] Kier i karo są rozróżnialne w skali szarości (usuń kolor — kształty muszą wystarczyć).
+- [ ] Pastylka nielegalnej odzywki jest rozpoznawalna w skali szarości.
+- [ ] Sprite ≤ 180 KB, bez `<script>`, `<style>`, `class`, `@font-face` i odwołań zewnętrznych.
 - [ ] Wszystkie napisy zamienione na krzywe.
-- [ ] Zestaw wygląda spójnie w motywie ciemnym i jasnym.
-- [ ] Nic nie przypomina logo ani stylistyki istniejącej marki kart czy serwisu brydżowego.
+- [ ] Zestaw działa w motywie jasnym i ciemnym.
+- [ ] Nic nie przypomina logo ani stylistyki istniejącego serwisu brydżowego czy wydawcy kart.
 
 --- KONIEC PROMPTU ---
 
@@ -299,23 +313,16 @@ z miejscem na sześcioznakowy kod pokoju pod spodem.
    ```bash
    node scripts/embed-sprite.mjs
    ```
-   (skrypt bierze `public/cards/sprite.svg` i zapisuje `src/client/assets/cardSprite.ts`;
-   jeśli chcesz wrócić do talii proceduralnej — `npm run cards`).
-3. Pozostałe pliki wrzuć do `public/art/`, a ikony do `public/art/icons.svg`.
-4. Sprawdź wizualnie pod `/dev/cards.html`, a potem zagraj jedno rozdanie.
+   Skrypt **sprawdza kontrakt** (52 symbole o właściwych ID, `viewBox` `0 0 240 336`, brak
+   skryptów i odwołań zewnętrznych) i odmawia wbudowania grafiki, która go łamie. Powrót do talii
+   proceduralnej: `npm run cards`.
+3. Pozostałe pliki wrzuć do `public/art/`, ikony do `public/art/icons.svg`.
+4. Sprawdź wizualnie pod `/dev/cards.html`, potem zagraj jedno rozdanie.
 
----
+## Zmiana motywu domyślnego na jasny
 
-## Stan realizacji (aktualizowane 30.08.2026)
+Prompt zakłada, że jasny motyw jest domyślny. Po stronie kodu to dwie rzeczy:
 
-| Pakiet | Stan | Uwagi |
-|---|---|---|
-| 1 — Talia | **ODEBRANY, wdrożony** | `sprite.svg` 171 KB, 63 symbole (52 karty + 3 rewersy + 8 godeł). Kontrakt techniczny spełniony w 100%: ID, `viewBox`, brak `<script>/<style>/class/@font-face`, kolory przez `var()` z fallbackiem, napisy na krzywych. Zweryfikowane wizualnie w 96/52/28 px, w trybie 2- i 4-kolorowym oraz w skali szarości. Figury oznaczone po polsku: **W / D / K**. |
-| 2 — Stół | brak | Aplikacja rysuje sukno i krawędź CSS-em, więc działa. Brakuje `vulnerability.svg` (romb założeń) i `dealer-marker.svg` — dziś oddane tekstem. |
-| 3 — Gracze | brak | Awatary robotów i graczy zastąpione inicjałem w kółku. |
-| 4 — Licytacja | brak | Pastylki licytacyjne rysowane CSS-em; wyglądają dobrze, ale bez `contract-plate.svg`. |
-| 5 — Ikony | brak | `icons.svg` (30 ikon) nieoddany. |
-| 6 — Marka | **częściowo, prowizorycznie** | Brak `logo-full/logo-mark/empty-table`. `favicon.svg` i `favicon-mono.svg` **złożyłem tymczasowo z godeł z Pakietu 1** (2×2 na suknie, mosiężna ramka) — wcześniej `index.html` linkował nieistniejący plik i przeglądarka dostawała HTML zamiast ikony. Do podmiany, gdy przyjdzie prawdziwy sygnet. |
-| 7 — Udostępnianie | brak | Bez `og-image.png` link do stołu nie ma podglądu w komunikatorach — to realna strata przy grze „wyślij link partnerowi". |
-
-**Kolejność wg wpływu na produkt:** 7.1 (og-image — link wysyłany partnerowi), 6.1–6.3 (marka, w tym docelowy favicon), 5 (ikony), 2.3 (romb założeń — dziś tekst), 3 (awatary), 4.3, 2.1–2.2.
+- w `src/client/styles/tokens.css` podmienić wartości bloku `[data-theme='daylight']` na paletę
+  z Sekcji 4 i przenieść ją do `:root`,
+- w `src/client/net/identity.ts` ustawić `daylight` jako domyślną preferencję nowego gracza.
