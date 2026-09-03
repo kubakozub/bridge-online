@@ -25,7 +25,7 @@ import {
 } from '../engine/game';
 import { buildMatchScore, scoreLineFromBoard } from '../engine/scoring';
 import { contractLabel } from '../engine/auction';
-import { canSeeHand, controllerOf, dummySeat } from '../engine/play';
+import { canSeeHand, dummySeat, effectiveController } from '../engine/play';
 import { isVulnerable, partnerOf, sideOf } from '../engine/deal';
 import { randomSeed } from '../engine/cards';
 import type {
@@ -754,11 +754,28 @@ export class TableDurableObject implements DurableObject {
    * Declarer plays dummy's cards, so when it is dummy's turn the action comes from declarer's
    * socket but the card belongs to dummy. Dummy themselves may never play.
    */
+  /**
+   * Kto steruje kartami z miejsca `turn` — z regula przejecia rozgrywki po robocie.
+   *
+   * WSZYSTKIE miejsca decydujace o sterowaniu musza wolac to samo, inaczej robot i czlowiek
+   * biliby sie o te sama karte: jeden uwazalby, ze to jego kolej, drugi tak samo.
+   */
+  private controllerFor(room: Room, turn: Seat): Seat {
+    const board = room.game.board;
+    if (!board?.contract || !board.play) return turn;
+    return effectiveController(
+      turn,
+      board.contract,
+      (seat) => room.occupants[seat].isBot,
+      room.settings.takeOverBotDeclarer,
+    );
+  }
+
   private cardOwnerForActor(room: Room, actor: Seat): Seat | null {
     const board = room.game.board;
     if (!board?.play || !board.contract) return null;
     const turn = board.play.turn;
-    return controllerOf(turn, board.contract) === actor ? turn : null;
+    return this.controllerFor(room, turn) === actor ? turn : null;
   }
 
   private undoTargetIndex(room: Room): number | null {
@@ -836,8 +853,8 @@ export class TableDurableObject implements DurableObject {
     if (!turn) return null;
 
     const board = room.game.board;
-    // During play, dummy's cards are chosen by whoever controls them.
-    const actor = board?.contract && board.play ? controllerOf(turn, board.contract) : turn;
+    // Kartami dziadka gra rozgrywajacy, a przy przejeciu — czlowiek-dziadek zamiast robota.
+    const actor = this.controllerFor(room, turn);
     const occupant = room.occupants[actor];
 
     if (occupant.isBot) return turn;
@@ -853,7 +870,7 @@ export class TableDurableObject implements DurableObject {
     const board = room.game.board;
     if (!turn || !board) return false;
 
-    const actor = board.contract && board.play ? controllerOf(turn, board.contract) : turn;
+    const actor = this.controllerFor(room, turn);
     const level: BotLevel = room.occupants[actor].botLevel ?? room.settings.botLevel;
     const before = room.game;
 
@@ -955,9 +972,7 @@ export class TableDurableObject implements DurableObject {
     // minął, botMoveAt jest null i nic nie budzi Durable Objectu — stół stał w miejscu do czasu,
     // aż ktoś przypadkiem wysłał wiadomość. Dokładamy własny kandydat: moment, w którym próg minie.
     const turnActor =
-      turn && room.game.board?.contract && room.game.board.play
-        ? controllerOf(turn, room.game.board.contract)
-        : turn;
+      turn ? this.controllerFor(room, turn) : turn;
     const opuszczone = turnActor ? room.occupants[turnActor] : null;
     const przejecieO =
       opuszczone && !opuszczone.isBot && !opuszczone.connected && opuszczone.playerId !== null
@@ -1069,8 +1084,17 @@ export class TableDurableObject implements DurableObject {
 
     for (const seat of SEATS) {
       counts[seat] = board.hands[seat].length;
+      // Kto przejal rozgrywke po robocie, MUSI widziec reke rozgrywajacego — inaczej dostalby
+      // prawo zagrania karty, ktorej nie widzi.
+      const przejal =
+        board.contract !== null &&
+        viewer !== null &&
+        seat === board.contract.declarer &&
+        this.controllerFor(room, board.contract.declarer) === viewer;
+
       const allowed =
         viewer === seat ||
+        przejal ||
         canSeeHand(viewer, seat, board.play, board.contract) ||
         room.game.phase === 'review' ||
         room.game.phase === 'finished';
@@ -1178,6 +1202,7 @@ export class TableDurableObject implements DurableObject {
       allowUndo: Boolean(settings.allowUndo),
       autoPlaySingleton: Boolean(settings.autoPlaySingleton),
       showHcp: Boolean(settings.showHcp),
+      takeOverBotDeclarer: Boolean(settings.takeOverBotDeclarer),
       isPrivate: Boolean(settings.isPrivate),
     };
   }

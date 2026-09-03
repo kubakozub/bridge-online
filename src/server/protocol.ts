@@ -57,6 +57,15 @@ export interface TableSettings {
   showHcp: boolean;
   /** Table is only joinable by someone who has the room code. */
   isPrivate: boolean;
+  /**
+   * Gdy rozgrywajacym zostanie ROBOT, a dziadkiem czlowiek — czlowiek przejmuje rozgrywke i gra
+   * obiema rekami strony rozgrywajacej.
+   *
+   * Bez tego gracz, ktory wypadnie na dziadka przy robocie-partnerze, nie ma przez cale rozdanie
+   * ani jednej decyzji: prawo brydzowe mowi, ze dziadek nie dotyka wlasnych kart. Formalnie
+   * poprawne, ale przy stole z robotami po prostu nie ma w co grac.
+   */
+  takeOverBotDeclarer: boolean;
 }
 
 export const DEFAULT_SETTINGS: TableSettings = {
@@ -68,6 +77,7 @@ export const DEFAULT_SETTINGS: TableSettings = {
   autoPlaySingleton: false,
   showHcp: true,
   isPrivate: false,
+  takeOverBotDeclarer: true,
 };
 
 // ---------------------------------------------------------------------------

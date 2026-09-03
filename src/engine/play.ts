@@ -110,6 +110,43 @@ export function controllerOf(seat: Seat, contract: Contract): Seat {
   return seat === dummySeat(contract.declarer) ? contract.declarer : seat;
 }
 
+/**
+ * Kto FAKTYCZNIE decyduje o karcie z danego miejsca, z uwzglednieniem przejecia rozgrywki po
+ * robocie.
+ *
+ * Prawo brydzowe mowi, ze dziadek nie gra swoimi kartami — robi to rozgrywajacy. To jest
+ * poprawne i `controllerOf` to realizuje. Problem pojawia sie dopiero przy stole z robotami:
+ * jesli rozgrywajacym zostanie robot-partner, czlowiek siedzacy jako dziadek nie ma przez cale
+ * rozdanie ANI JEDNEJ decyzji. Formalnie w porzadku, w praktyce nie ma w co grac.
+ *
+ * Dlatego przy wlaczonym `allowTakeover` czlowiek-dziadek przejmuje rozgrywke i gra obiema
+ * rekami strony rozgrywajacej — tak jak w trybie solo w programach do brydza.
+ *
+ * Przejecie dotyczy WYLACZNIE strony rozgrywajacej. Gdyby objac nim obrone, gracz dostalby do
+ * reki zakryte karty partnera-robota, co psuje gre zamiast ja ratowac.
+ *
+ * @param isBot        czy na danym miejscu siedzi robot
+ * @param allowTakeover ustawienie stolu; false = czyste prawo brydzowe
+ */
+export function effectiveController(
+  turn: Seat,
+  contract: Contract,
+  isBot: (seat: Seat) => boolean,
+  allowTakeover: boolean,
+): Seat {
+  const base = controllerOf(turn, contract);
+  if (!allowTakeover) return base;
+
+  // Tylko strona rozgrywajaca: dla obroncow `base` to oni sami.
+  if (base !== contract.declarer) return base;
+  if (!isBot(contract.declarer)) return base;
+
+  const dummy = dummySeat(contract.declarer);
+  if (isBot(dummy)) return base; // dziadek tez robot — nie ma komu przejac
+
+  return dummy;
+}
+
 // ---------------------------------------------------------------------------
 // Starting and inspecting the play
 // ---------------------------------------------------------------------------

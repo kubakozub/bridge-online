@@ -18,7 +18,7 @@ import { SEATS } from '../engine/types';
 import { hcp } from '../engine/cards';
 import { isVulnerable, sideOf } from '../engine/deal';
 import { legalCalls, seatToCall } from '../engine/auction';
-import { controllerOf, dummySeat, legalCards } from '../engine/play';
+import { dummySeat, effectiveController, legalCards } from '../engine/play';
 import { DEFAULT_SETTINGS } from '../server/protocol';
 import type { SeatOccupant, TableSettings } from '../server/protocol';
 import { orientationOf, seatsForViewer, SEAT_LABEL_PL, type TablePosition } from './seats';
@@ -172,8 +172,14 @@ export function Table({ roomCode }: TableProps): JSX.Element {
    */
   const controlledSeat: Seat | null = useMemo(() => {
     if (phase !== 'play' || play === null || contract === null || yourSeat === null) return null;
-    return controllerOf(play.turn, contract) === yourSeat ? play.turn : null;
-  }, [phase, play, contract, yourSeat]);
+    // Ta sama regula co na serwerze (effectiveController), lacznie z przejeciem rozgrywki po
+    // robocie. Gdyby klient liczyl to inaczej, podswietlalby reke, ktorej serwer nie pozwoli zagrac.
+    const isBot = (seat: Seat): boolean =>
+      occupants.some((entry) => entry.seat === seat && entry.isBot);
+    return effectiveController(play.turn, contract, isBot, settings.takeOverBotDeclarer) === yourSeat
+      ? play.turn
+      : null;
+  }, [phase, play, contract, yourSeat, occupants, settings.takeOverBotDeclarer]);
 
   const controlledHand: Card[] | undefined =
     controlledSeat !== null ? board?.hands.visible[controlledSeat] : undefined;
@@ -672,9 +678,14 @@ export function Table({ roomCode }: TableProps): JSX.Element {
 
             {phase === 'play' && controlledSeat !== null ? (
               <p className="bo-actions__wait" aria-live="polite">
+                {/* Trzy przypadki, nie dwa. Przy przejeciu rozgrywki po robocie sterujemy reka
+                    ROZGRYWAJACEGO, a nie dziadka — stary tekst nazywal wtedy rozgrywajacego
+                    dziadkiem, czyli mowil graczowi cos wprost nieprawdziwego o wlasnym stole. */}
                 {controlledSeat === yourSeat
                   ? 'Twoja kolej — zagraj kartę.'
-                  : `Zagraj kartą dziadka (${SEAT_LABEL_PL[controlledSeat]}).`}
+                  : controlledSeat === dummy
+                    ? `Zagraj kartą dziadka (${SEAT_LABEL_PL[controlledSeat]}).`
+                    : `Zagraj kartą rozgrywającego (${SEAT_LABEL_PL[controlledSeat]}).`}
               </p>
             ) : null}
 

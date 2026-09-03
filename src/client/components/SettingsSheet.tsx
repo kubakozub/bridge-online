@@ -339,6 +339,14 @@ export function SettingsSheet({
             />
 
             <Toggle
+              label="Przejmuj rozgrywkę po robocie"
+              hint="Gdy rozgrywającym zostanie robot, a Ty jesteś dziadkiem — grasz obiema rękami zamiast patrzeć. Wyłącz, żeby trzymać się czystych reguł, w których dziadek nie dotyka kart."
+              checked={settings.takeOverBotDeclarer}
+              disabled={!canEdit}
+              onToggle={(takeOverBotDeclarer) => onChange({ takeOverBotDeclarer })}
+            />
+
+            <Toggle
               label="Automatyczne dokładanie"
               hint="Gdy zostaje jedna dozwolona karta, dokładamy ją za Ciebie."
               checked={settings.autoPlaySingleton}
