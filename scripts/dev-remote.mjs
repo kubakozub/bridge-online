@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 const target =
   process.env.BRIDGE_REMOTE ??
   process.env.VITE_API_TARGET ??
-  'https://bridge-online.muddy-office.workers.dev';
+  'https://brydz.uk';
 
 process.env.VITE_API_TARGET = target;
 

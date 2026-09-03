@@ -124,8 +124,8 @@ Potem:
 npm run deploy
 ```
 
-To buduje klienta do `dist/client` i wypycha Workera razem z zasobami statycznymi. Wrangler
-wypisze adres w postaci `https://bridge-online.<twoja-subdomena>.workers.dev`.
+To buduje klienta do `dist/client` i wypycha Workera razem z zasobami statycznymi. Gra jest
+dostępna pod adresem https://brydz.uk (adres `*.workers.dev` jest wyłączony w `wrangler.jsonc`).
 
 Durable Objects z magazynem SQLite działają na planie darmowym — migracja `v1` w
 `wrangler.jsonc` tworzy klasę `TableDurableObject` przy pierwszym wdrożeniu.
