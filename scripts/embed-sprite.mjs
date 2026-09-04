@@ -18,7 +18,14 @@ const OUT = resolve(ROOT, 'src/client/assets/cardSprite.ts');
 const SUITS = ['S', 'H', 'D', 'C'];
 const RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
 
-const sprite = readFileSync(SRC, 'utf8');
+const raw = readFileSync(SRC, 'utf8');
+
+// Root ukrywamy zerowym rozmiarem, nie display:none — w Firefoksie gradienty i wzory z
+// display:none nie renderuja sie w <use>. Dzisiejsza talia ich nie ma, ale kolejna moze.
+const sprite = raw.replace(
+  /<svg([^>]*) style="display:none"([^>]*)>/,
+  '<svg$1 width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" focusable="false"$2>',
+);
 
 // --- Contract checks: fail loudly rather than shipping a half-broken deck. -------------------
 const problems = [];

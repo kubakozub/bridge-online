@@ -9,7 +9,39 @@
 import type { BidLevel, Call, Contract, Risk, Strain } from '../../engine/types';
 import { parseBid } from '../../engine/auction';
 import { SEAT_LABEL_PL, SEAT_LABEL_SHORT_PL, STRAIN_LABEL } from '../seats';
+import { ART_VIEWBOX, type ArtId } from '../assets/artSprite';
 import '../styles/bidding.css';
+import '../styles/bidding-art.css';
+
+// ---------------------------------------------------------------------------
+// ArtFill - a sprite symbol stretched over the whole box of its parent
+// ---------------------------------------------------------------------------
+
+export interface ArtFillProps {
+  id: ArtId;
+  className?: string;
+}
+
+/**
+ * Decorative background taken from the art sprite (Claude Design, pakiet 4). Unlike <Art/>,
+ * which keeps the symbol's own proportions, this one is meant to sit behind content of any
+ * shape - a 120x84 bidding chip on a button that is 3:1 on a laptop and 5:4 on a phone - so
+ * it is drawn with `preserveAspectRatio="none"` and positioned `inset: 0` by bidding-art.css.
+ * The parent supplies `position: relative`; the label stays on top by its own z-index.
+ */
+export function ArtFill({ id, className }: ArtFillProps): JSX.Element {
+  return (
+    <svg
+      className={cx('bo-art-fill', className)}
+      viewBox={ART_VIEWBOX[id]}
+      preserveAspectRatio="none"
+      focusable="false"
+      aria-hidden="true"
+    >
+      <use href={`#${id}`} />
+    </svg>
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Polish vocabulary
@@ -132,7 +164,9 @@ export function ContractBadge({
   }.`;
 
   return (
-    <span className={base}>
+    <span className={cx(base, 'bo-contract--plated')}>
+      {/* Brass plate behind the contract; the text and glyph stay on top of it. */}
+      <ArtFill id="art-contract-plate" className="bo-contract__plate" />
       <span className="bo-contract__visual" aria-hidden="true">
         <CallText call={bid} />
         {contract.risk !== 'none' && (

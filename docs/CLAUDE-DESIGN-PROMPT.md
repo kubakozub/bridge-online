@@ -308,16 +308,20 @@ krzesła po przeciwnych stronach stołu, jedno puste. Spokojna, jednobarwna, bez
 
 ## Jak wgrać wynik do repozytorium
 
-1. Podmień `public/cards/sprite.svg` na plik z Pakietu 1.
-2. Przegeneruj wersję wbudowaną w bundle:
-   ```bash
-   node scripts/embed-sprite.mjs
-   ```
-   Skrypt **sprawdza kontrakt** (52 symbole o właściwych ID, `viewBox` `0 0 240 336`, brak
-   skryptów i odwołań zewnętrznych) i odmawia wbudowania grafiki, która go łamie. Powrót do talii
-   proceduralnej: `npm run cards`.
-3. Pozostałe pliki wrzuć do `public/art/`, ikony do `public/art/icons.svg`.
-4. Sprawdź wizualnie pod `/dev/cards.html`, potem zagraj jedno rozdanie.
+Rozpakuj paczkę (musi zawierać `public/art/*.svg` + `manifest.json`; opcjonalnie
+`public/cards/sprite.svg` i `public/art/og-image.png`) i uruchom:
+
+```bash
+node scripts/import-art.mjs <katalog-z-rozpakowaną-paczką>
+node scripts/embed-sprite.mjs   # tylko jeśli paczka zawiera talię
+node scripts/embed-art.mjs
+```
+
+`import-art` wycina metadane C2PA (Claude Design dokłada do każdego pliku ~7,7 KB podpisu
+pochodzenia), sprawdza kontrakt z Sekcji 5 i **odmawia importu** pliku, który go łamie.
+`embed-sprite` sprawdza talię (52 ID, `viewBox 0 0 240 336`). `embed-art` składa resztę w jeden
+sprite wbudowany w bundle. Potem: `npm run typecheck && npm test`, podgląd pod `/dev/cards.html`,
+jedno rozdanie na próbę.
 
 ## Zmiana motywu domyślnego na jasny
 

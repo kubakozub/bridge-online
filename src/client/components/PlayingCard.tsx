@@ -5,14 +5,21 @@
  * so the whole deck costs a single parse and recolours itself from the tokens (`--card-face`,
  * `--suit-heart`, ...). Nothing here hard-codes a colour, a shadow or a pixel size: geometry
  * comes from `--card-w` in tokens.css, via the `--bo-card-w` local in cards.css.
+ *
+ * A card in hand also wears the `state-*` overlays from the art pack (card-states.svg): a
+ * second `<svg>` per state, in the same 240x336 coordinate system, laid over the face. They are
+ * decorative, never a pointer target, and positioned by cards-art.css - the card face and its
+ * `<use href="#card-XX">` are untouched by them.
  */
 
 import { useEffect, useState, type CSSProperties } from 'react';
 import { CARD_SPRITE, CARD_VIEWBOX } from '../assets/cardSprite';
+import { ART_VIEWBOX, type ArtId } from '../assets/artSprite';
 import { rankChar, suitOf } from '../../engine/cards';
 import type { Card, RankChar, Suit } from '../../engine/types';
 import { SUIT_NAME_PL } from '../seats';
 import '../styles/cards.css';
+import '../styles/cards-art.css';
 
 /** Coordinate system of the `suit-*` symbols in the generated sprite. */
 const SUIT_VIEWBOX = '0 0 100 100';
@@ -160,6 +167,33 @@ export function SuitGlyph({ suit, mono = false, className, size }: SuitGlyphProp
 }
 
 // ---------------------------------------------------------------------------
+// State overlays (card-states.svg from the art pack)
+// ---------------------------------------------------------------------------
+
+/** The `state-*` symbols a card in hand can wear. All share the card's 240x336 viewBox. */
+type CardStateId = Extract<ArtId, 'state-legal' | 'state-illegal' | 'state-hover'>;
+
+/**
+ * One overlay: a second `<svg>` over the face, pointing at a `state-*` symbol in the art sprite
+ * (mounted once by `ArtSpriteMount`). The symbol colours itself from the tokens, so nothing is
+ * passed in. Purely decorative: hidden from assistive tech and, via cards-art.css, absolutely
+ * positioned with `pointer-events: none`, so the button underneath keeps the click and the hover.
+ */
+function StateOverlay({ id }: { id: CardStateId }): JSX.Element {
+  const modifier = id.slice('state-'.length);
+  return (
+    <svg
+      className={`bo-card__state bo-card__state--${modifier}`}
+      viewBox={ART_VIEWBOX[id]}
+      aria-hidden="true"
+      focusable="false"
+    >
+      <use href={`#${id}`} />
+    </svg>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Playing card
 // ---------------------------------------------------------------------------
 
@@ -214,7 +248,20 @@ export function PlayingCard({
     </svg>
   );
 
-  if (!showsBack && card !== null && onSelect !== undefined) {
+  const interactive = !showsBack && card !== null && onSelect !== undefined;
+
+  // Overlays stack in DOM order: the legal / illegal treatment first, the hover outline on top.
+  // The hover outline is always in the tree for an interactive card and fades in from CSS on
+  // :hover / :focus-visible, so no React state is needed to show it.
+  const states = (
+    <>
+      {playable ? <StateOverlay id="state-legal" /> : null}
+      {dimmed ? <StateOverlay id="state-illegal" /> : null}
+      {interactive ? <StateOverlay id="state-hover" /> : null}
+    </>
+  );
+
+  if (interactive) {
     return (
       <button
         type="button"
@@ -229,6 +276,7 @@ export function PlayingCard({
         }}
       >
         {face}
+        {states}
       </button>
     );
   }
@@ -242,6 +290,7 @@ export function PlayingCard({
       aria-label={showsBack ? 'Zakryta karta' : cardAriaLabel(card as Card)}
     >
       {face}
+      {states}
     </div>
   );
 }

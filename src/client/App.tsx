@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { CardSpriteMount } from './components/PlayingCard';
+import { ArtSpriteMount } from './components/Art';
 import { Lobby } from './Lobby';
 import { Table } from './Table';
 import './styles/app.css';
@@ -41,6 +42,7 @@ export function App(): JSX.Element {
   return (
     <>
       <CardSpriteMount />
+      <ArtSpriteMount />
       {/* Keying by room code guarantees a brand-new socket and brand-new state per table. */}
       {room !== null ? <Table roomCode={room} key={room} /> : <Lobby />}
     </>

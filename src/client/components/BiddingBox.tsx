@@ -16,11 +16,31 @@ import { useCallback, useId, useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { STRAINS } from '../../engine/types';
 import type { BidLevel, Call } from '../../engine/types';
-import { CallText, describeCall } from './ContractBadge';
+import type { ArtId } from '../assets/artSprite';
+import { ArtFill, CallText, describeCall } from './ContractBadge';
 import '../styles/bidding.css';
+import '../styles/bidding-art.css';
 
 const LEVELS: readonly BidLevel[] = [1, 2, 3, 4, 5, 6, 7];
 const SPECIALS: readonly Call[] = ['P', 'X', 'XX'];
+
+/** Pass / double / redouble are drawn as their own coloured cards from the art sprite. */
+const SPECIAL_ART: Record<'P' | 'X' | 'XX', ArtId> = {
+  P: 'art-call-pass',
+  X: 'art-call-double',
+  XX: 'art-call-redouble',
+};
+
+/**
+ * Which sprite symbol sits behind a bidding button. A contract bid is one chip template in
+ * three states; "unavailable" wins over "hint" so a locked box never shows a highlighted chip.
+ */
+function chipArtFor(call: Call, enabled: boolean, isHint: boolean): ArtId {
+  if (call === 'P' || call === 'X' || call === 'XX') return SPECIAL_ART[call];
+  if (!enabled) return 'bid-chip-disabled';
+  if (isHint) return 'bid-chip-hint';
+  return 'bid-chip';
+}
 
 /** rows[r][c]: seven rows of five bids (C D H S BA), then pass / double / redouble. */
 const ROWS: readonly (readonly Call[])[] = [
@@ -161,6 +181,7 @@ export function BiddingBox({
                     if (enabled) onCall(call);
                   }}
                 >
+                  <ArtFill id={chipArtFor(call, enabled, isHint)} className="bo-bid__art" />
                   <CallText call={call} long={special} className="bo-call--plain" />
                 </button>
               );

@@ -10,8 +10,11 @@
 import { useState } from 'react';
 import type { Seat } from '../../engine/types';
 import type { BotLevel, SeatOccupant } from '../../server/protocol';
+import type { ArtId } from '../assets/artSprite';
 import { SEAT_LABEL_PL, SEAT_LABEL_SHORT_PL, type TablePosition } from '../seats';
+import { Art, Icon, avatarIdFor, robotIdFor } from './Art';
 import '../styles/table.css';
+import '../styles/seat-art.css';
 
 export interface SeatPlateProps {
   seat: Seat;
@@ -56,10 +59,27 @@ const BOT_LEVEL_LABEL_PL: Record<BotLevel, string> = {
   advanced: 'zaawansowany',
 };
 
+/** Connection lamp artwork from the sprite: green halo, amber clock, grey slash. */
+const CONNECTION_ART: Record<ConnectionState, ArtId> = {
+  online: 'conn-online',
+  idle: 'conn-away',
+  offline: 'conn-offline',
+};
+
 function connectionState(occupant: SeatOccupant): ConnectionState {
   if (occupant.connected) return 'online';
   if (occupant.isBot) return 'offline';
   return Date.now() - occupant.lastSeen < RECONNECT_GRACE_MS ? 'idle' : 'offline';
+}
+
+/**
+ * Robots get the head that matches their level; humans get a stable emblem keyed by identity,
+ * so a partner keeps the same face after a reconnect. A human without an id (should not happen,
+ * but the protocol allows null) falls back to the name so the seat still gets an avatar.
+ */
+function avatarFor(occupant: SeatOccupant): ArtId {
+  if (occupant.isBot) return robotIdFor(occupant.botLevel ?? 'intermediate');
+  return avatarIdFor(occupant.playerId ?? occupant.name);
 }
 
 export function SeatPlate({
@@ -136,7 +156,10 @@ export function SeatPlate({
             />
           </svg>
         ) : null}
+        {isTurn ? <Art id="art-seat-ring" className="bo-seat__ring" /> : null}
       </span>
+
+      {occupant ? <Art id={avatarFor(occupant)} className="bo-seat__avatar" /> : null}
 
       {occupant ? (
         <>
@@ -147,7 +170,9 @@ export function SeatPlate({
                 data-conn={connection}
                 title={CONNECTION_LABEL_PL[connection]}
                 aria-hidden="true"
-              />
+              >
+                <Art id={CONNECTION_ART[connection]} className="bo-seat__dot-art" />
+              </span>
               <span className="bo-seat__name" title={occupant.name}>
                 {occupant.name}
               </span>
@@ -182,7 +207,7 @@ export function SeatPlate({
 
           {isDealer ? (
             <span className="bo-seat__dealer" title="Rozdający">
-              <span aria-hidden="true">R</span>
+              <Art id="art-dealer-marker" className="bo-seat__dealer-art" />
               <span className="bo-sr-only">Rozdający</span>
             </span>
           ) : null}
@@ -224,6 +249,7 @@ export function SeatPlate({
                 onClick={() => onSit(seat)}
                 aria-label={`Usiądź na miejscu ${seatName}`}
               >
+                <Icon name="sit" size={14} />
                 Usiądź
               </button>
             ) : null}
@@ -234,6 +260,7 @@ export function SeatPlate({
                 onClick={() => onAddBot(seat)}
                 aria-label={`Dodaj robota na miejsce ${seatName}`}
               >
+                <Icon name="robot" size={14} />
                 Dodaj robota
               </button>
             ) : null}

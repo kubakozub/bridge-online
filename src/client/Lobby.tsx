@@ -30,7 +30,9 @@ import {
   type LocalPrefs,
   type ThemeName,
 } from './net/identity';
+import { Art } from './components/Art';
 import './styles/app.css';
+import './styles/shell-art.css';
 
 /** Room codes are six characters; the input never grows past that. */
 const ROOM_CODE_LENGTH = 6;
@@ -213,7 +215,7 @@ export function Lobby(): JSX.Element {
     <div className="bo-app bo-app--lobby">
       <header className="bo-topbar">
         <span className="bo-topbar__brand">
-          <span aria-hidden="true">♠</span> Bridge Online
+          <Art id="art-logo-mark" size={26} className="bo-topbar__logo" /> Bridge Online
         </span>
         <div className="bo-topbar__prefs">
           <SegmentedToggle
@@ -233,6 +235,7 @@ export function Lobby(): JSX.Element {
 
       <main className="bo-lobby">
         <section className="bo-hero">
+          <Art id="art-logo-full" label="Bridge Online" className="bo-hero__logo" />
           <h1 className="bo-hero__title">Brydż dla dwojga</h1>
           <p className="bo-hero__lead">
             Zagraj pełne rozdanie z drugą osobą, choćby była na drugim końcu Polski — licytacja

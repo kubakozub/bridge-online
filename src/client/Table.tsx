@@ -22,6 +22,7 @@ import { dummySeat, effectiveController, legalCards } from '../engine/play';
 import { DEFAULT_SETTINGS } from '../server/protocol';
 import type { SeatOccupant, TableSettings } from '../server/protocol';
 import { orientationOf, seatsForViewer, SEAT_LABEL_PL, type TablePosition } from './seats';
+import { Art, Icon } from './components/Art';
 import { AuctionGrid } from './components/AuctionGrid';
 import { BiddingBox } from './components/BiddingBox';
 import { ChatPanel } from './components/ChatPanel';
@@ -38,6 +39,7 @@ import { trickToShow } from './trickView';
 import { loadIdentity, loadLocalPrefs, saveLocalPrefs, type LocalPrefs } from './net/identity';
 import { useTable, type ConnectionStatus } from './net/useTable';
 import './styles/app.css';
+import './styles/shell-art.css';
 
 export interface TableProps {
   roomCode: string;
@@ -421,6 +423,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
       const free = SEATS.filter((seat) => occupants.every((entry) => entry.seat !== seat));
       return (
         <div className="bo-centre-card">
+          <Art id="art-empty-table" className="bo-centre-card__art" />
           <h2 className="bo-centre-card__title">Poczekalnia</h2>
           <p className="bo-centre-card__text">
             {yourSeat === null
@@ -531,7 +534,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
   const header = (
     <header className="bo-topbar">
       <a className="bo-topbar__brand" href="#/">
-        <span aria-hidden="true">♠</span> Bridge Online
+        <Art id="art-logo-mark" size={26} className="bo-topbar__logo" /> Bridge Online
       </a>
 
       <p className="bo-topbar__code">
@@ -540,6 +543,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
       </p>
 
       <button type="button" className="bo-btn bo-btn--ghost bo-btn--sm" onClick={onCopyLink}>
+        <Icon name={copied ? 'check' : 'copy'} />
         {copied ? 'Skopiowano' : 'Kopiuj link'}
       </button>
 
@@ -556,6 +560,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
       ) : null}
 
       <button type="button" className="bo-btn bo-btn--ghost bo-btn--sm bo-topbar__leave" onClick={onLeave}>
+        <Icon name="leave" />
         Opuść stół
       </button>
     </header>
@@ -629,21 +634,36 @@ export function Table({ roomCode }: TableProps): JSX.Element {
               ? `Stół ${roomCode} — rozdanie ${board?.boardNumber ?? 1}`
               : `Stół ${roomCode}`}
           </h1>
-          {contract !== null && (phase === 'play' || phase === 'review' || phase === 'finished') ? (
+          {/* Pasek nad stolem istnieje w KAZDEJ fazie rozdania i ma stala wysokosc. Wczesniej
+              pojawial sie dopiero po zawarciu kontraktu, wiec sukno w licytacji bylo wyzsze niz w
+              rozgrywce — a ze karta skaluje sie wysokoscia sukna, caly stol skakal w chwili
+              zawarcia kontraktu. Jedna wysokosc paska = jedna wysokosc sukna = jedna karta. */}
+          {board !== null ? (
             <div className="bo-hud">
-              <button
-                type="button"
-                className="bo-hud__toggle"
-                aria-expanded={auctionOpen}
-                aria-controls="bo-auction-panel"
-                onClick={() => setAuctionOpen((open) => !open)}
-              >
-                <ContractBadge contract={contract} size="sm" />
-                <span className="bo-hud__hint">
-                  {auctionOpen ? 'Ukryj licytację' : 'Pokaż licytację'}
-                </span>
-              </button>
-              <div id="bo-auction-panel" className="bo-hud__auction" hidden={!auctionOpen}>
+              {contract !== null ? (
+                <button
+                  type="button"
+                  className="bo-hud__toggle"
+                  aria-expanded={auctionOpen}
+                  aria-controls="bo-auction-panel"
+                  onClick={() => setAuctionOpen((open) => !open)}
+                >
+                  <ContractBadge contract={contract} size="sm" />
+                  <span className="bo-hud__hint bo-hud__hint--icon">
+                    <Icon name="history" size={16} />
+                    {auctionOpen ? 'Ukryj licytację' : 'Pokaż licytację'}
+                  </span>
+                </button>
+              ) : (
+                <div className="bo-hud__toggle bo-hud__toggle--static" role="status">
+                  <span className="bo-hud__status">
+                    {phase === 'auction'
+                      ? `Licytacja — rozdaje ${SEAT_LABEL_PL[board.dealer]}`
+                      : 'Rozdanie spasowane'}
+                  </span>
+                </div>
+              )}
+              <div id="bo-auction-panel" className="bo-hud__auction" hidden={contract === null || !auctionOpen}>
                 <AuctionGrid
                   auction={board?.auction ?? []}
                   dealer={board?.dealer ?? 'N'}
@@ -676,16 +696,29 @@ export function Table({ roomCode }: TableProps): JSX.Element {
               <BiddingBox legal={legalBids} onCall={onMakeCall} hint={null} />
             ) : null}
 
-            {phase === 'play' && controlledSeat !== null ? (
+            {/* Linia statusu istnieje ZAWSZE, gdy jest rozdanie — o stalej wysokosci. Wczesniej
+                renderowala sie tylko w rozgrywce i tylko w turze gracza, wiec pasek akcji zmienial
+                wysokosc miedzy fazami I w srodku rozgrywki przy kazdej zmianie ruchu, a razem z nim
+                sukno i wielkosc karty. Tresc jest przy okazji uzyteczna: mowi, czyj jest ruch. */}
+            {board !== null ? (
               <p className="bo-actions__wait" aria-live="polite">
-                {/* Trzy przypadki, nie dwa. Przy przejeciu rozgrywki po robocie sterujemy reka
-                    ROZGRYWAJACEGO, a nie dziadka — stary tekst nazywal wtedy rozgrywajacego
-                    dziadkiem, czyli mowil graczowi cos wprost nieprawdziwego o wlasnym stole. */}
-                {controlledSeat === yourSeat
-                  ? 'Twoja kolej — zagraj kartę.'
-                  : controlledSeat === dummy
-                    ? `Zagraj kartą dziadka (${SEAT_LABEL_PL[controlledSeat]}).`
-                    : `Zagraj kartą rozgrywającego (${SEAT_LABEL_PL[controlledSeat]}).`}
+                {phase === 'auction'
+                  ? yourTurnToCall
+                    ? 'Twoja kolej — zalicytuj.'
+                    : seatToBid !== null
+                      ? `Licytuje: ${SEAT_LABEL_PL[seatToBid]}`
+                      : ' '
+                  : phase === 'play' && play !== null
+                    ? controlledSeat !== null
+                      ? controlledSeat === yourSeat
+                        ? 'Twoja kolej — zagraj kartę.'
+                        : controlledSeat === dummy
+                          ? `Zagraj kartą dziadka (${SEAT_LABEL_PL[controlledSeat]}).`
+                          : `Zagraj kartą rozgrywającego (${SEAT_LABEL_PL[controlledSeat]}).`
+                      : `Gra: ${SEAT_LABEL_PL[play.turn]}`
+                    : phase === 'review'
+                      ? 'Rozdanie zakończone.'
+                      : ' '}
               </p>
             ) : null}
 
@@ -703,6 +736,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
                   className="bo-btn bo-btn--sm"
                   onClick={() => setClaimOpen(true)}
                 >
+                  <Icon name="claim" />
                   Zapowiedz lewy
                 </button>
               ) : null}
@@ -713,6 +747,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
                   className="bo-btn bo-btn--sm"
                   onClick={() => send({ t: 'requestUndo' })}
                 >
+                  <Icon name="undo" />
                   Cofnij
                 </button>
               ) : null}
@@ -723,6 +758,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
                   className="bo-btn bo-btn--primary bo-btn--sm"
                   onClick={() => send({ t: 'nextBoard' })}
                 >
+                  <Icon name="next-board" />
                   Następne rozdanie
                 </button>
               ) : null}
@@ -761,6 +797,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
                 tabIndex={tab === 'score' ? 0 : -1}
                 onClick={() => selectTab('score')}
               >
+                <Icon name="score" />
                 Wynik
               </button>
               <button
@@ -773,6 +810,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
                 tabIndex={tab === 'chat' ? 0 : -1}
                 onClick={() => selectTab('chat')}
               >
+                <Icon name="chat" />
                 Czat
                 {unreadChat > 0 ? (
                   <span className="bo-rail__badge">
@@ -788,6 +826,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
               className="bo-rail__tab bo-rail__tab--plain"
               onClick={() => setSettingsOpen(true)}
             >
+              <Icon name="settings" />
               Ustawienia
             </button>
           </div>

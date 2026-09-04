@@ -8,13 +8,18 @@
  *
  * Between tricks - before the opening lead, or after a trick has been swept away - the same space
  * shows the board's identity card: number, dealer, vulnerability and contract.
+ *
+ * Grafika ze sprite'a (Art): pod kartami lezy `art-trick-well` (rozjasnienie sukna), zalozenia
+ * rysuje symbol `vul-*`, a ostatnio dolozona karta dostaje jednorazowy blysk `state-just-played`.
  */
 
 import type { Card, RankChar, Seat, Strain, Suit, Trick, Vulnerability } from '../../engine/types';
-import { isVulnerable } from '../../engine/deal';
+import type { ArtId } from '../assets/artSprite';
 import { CARD_VIEWBOX } from '../assets/cardSprite';
-import { positionOf, SEAT_LABEL_PL, SEAT_LABEL_SHORT_PL, STRAIN_LABEL, SUIT_NAME_PL } from '../seats';
+import { positionOf, SEAT_LABEL_PL, STRAIN_LABEL, SUIT_NAME_PL } from '../seats';
+import { Art } from './Art';
 import '../styles/table.css';
+import '../styles/trick-art.css';
 
 export interface TrickAreaProps {
   trick: Trick | null;
@@ -52,20 +57,12 @@ const VULNERABILITY_LABEL_PL: Record<Vulnerability, string> = {
   Both: 'obie linie po partii',
 };
 
-/** Corners of the vulnerability square, split by its diagonals into four seat triangles. */
-const VUL_QUADRANT: Record<Seat, string> = {
-  N: '0,0 40,0 20,20',
-  E: '40,0 40,40 20,20',
-  S: '40,40 0,40 20,20',
-  W: '0,40 0,0 20,20',
-};
-
-/** Where the seat letter sits inside its quadrant. */
-const VUL_LETTER_POS: Record<Seat, { x: number; y: number }> = {
-  N: { x: 20, y: 9.5 },
-  E: { x: 31, y: 23.5 },
-  S: { x: 20, y: 37 },
-  W: { x: 9, y: 23.5 },
+/** Symbol zalozen ze sprite'a: romb z cwiartkami N/E/S/W, strona po partii w --danger. */
+const VUL_ART: Record<Vulnerability, ArtId> = {
+  None: 'vul-none',
+  NS: 'vul-ns',
+  EW: 'vul-ew',
+  Both: 'vul-both',
 };
 
 function cardNamePl(card: Card): string {
@@ -107,33 +104,11 @@ export function TrickArea({
         <div className="bo-board">
           <p className="bo-board__number">{`Rozdanie ${boardNumber}`}</p>
           <div className="bo-board__body">
-            <svg
+            <Art
+              id={VUL_ART[vulnerability]}
               className="bo-board__vul"
-              viewBox="0 0 40 40"
-              role="img"
-              aria-label={`Założenia: ${VULNERABILITY_LABEL_PL[vulnerability]}`}
-              focusable="false"
-            >
-              {(Object.keys(VUL_QUADRANT) as Seat[]).map((quadrantSeat) => (
-                <polygon
-                  key={quadrantSeat}
-                  className="bo-board__vul-quadrant"
-                  points={VUL_QUADRANT[quadrantSeat]}
-                  data-vul={isVulnerable(quadrantSeat, vulnerability) ? 'true' : 'false'}
-                />
-              ))}
-              {(Object.keys(VUL_LETTER_POS) as Seat[]).map((quadrantSeat) => (
-                <text
-                  key={quadrantSeat}
-                  className="bo-board__vul-letter"
-                  x={VUL_LETTER_POS[quadrantSeat].x}
-                  y={VUL_LETTER_POS[quadrantSeat].y}
-                  textAnchor="middle"
-                >
-                  {SEAT_LABEL_SHORT_PL[quadrantSeat]}
-                </text>
-              ))}
-            </svg>
+              label={`Założenia: ${VULNERABILITY_LABEL_PL[vulnerability]}`}
+            />
 
             <dl className="bo-board__facts">
               <dt>Rozdaje</dt>
@@ -153,6 +128,9 @@ export function TrickArea({
     );
   }
 
+  /** Ostatnia karta w lewie — tylko ona dostaje blysk „wlasnie zagrana". */
+  const lastCard = played[played.length - 1].card;
+
   return (
     <div className="bo-trick-area" role="group" aria-label="Środek stołu">
       <div
@@ -160,6 +138,9 @@ export function TrickArea({
         data-winner={sweptTo ? positionOf(viewer, sweptTo) : undefined}
         data-swept={sweptTo ? 'true' : 'false'}
       >
+        {/* Tlo pola lewy: pierwsze w DOM, wiec pod slotami, atutem i podpisem zwyciezcy. */}
+        <Art id="art-trick-well" className="bo-trick__well" />
+
         {trump ? (
           <span className="bo-trick__trump" data-strain={trump} aria-hidden="true">
             {STRAIN_LABEL[trump]}
@@ -177,6 +158,9 @@ export function TrickArea({
             >
               <use href={`#card-${card}`} />
             </svg>
+            {/* Nakladka montuje sie razem ze slotem (klucz = karta), wiec animacja CSS
+                startuje od zera dla kazdej nowej karty i gasnie sama po ~600 ms. */}
+            {card === lastCard ? <Art id="state-just-played" className="bo-trick__flash" /> : null}
           </span>
         ))}
 

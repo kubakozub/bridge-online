@@ -650,22 +650,8 @@
   overflow: hidden;
 }
 
-.bo-board__vul-quadrant {
-  fill: var(--vul-no);
-  stroke: var(--surface-1);
-  stroke-width: 1.5;
-}
 
-.bo-board__vul-quadrant[data-vul='true'] {
-  fill: var(--vul-yes);
-}
 
-.bo-board__vul-letter {
-  fill: var(--card-face);
-  font-family: var(--font-ui);
-  font-size: 9px;
-  font-weight: 700;
-}
 
 .bo-board__facts {
   display: grid;

@@ -378,40 +378,36 @@ body {
    * stos dostaje `1fr` i dzieli miedzy wiersze dokladnie tyle miejsca, ile zostalo.
    */
   /*
-   * W trakcie licytacji karty schodza o oczko nizej, zeby drabinka dostala te ~60px, ktore
-   * uwalniaja sie na obu recach. Bez tego przyciski odzywek wychodzily 21px wysokie — mieszcza
-   * sie, ale w takie cos sie nie celuje. Priorytety sa rozne w roznych fazach: przy licytacji
-   * patrzy sie na pudelko, a rece przeciwnikow to i tak same rewersy.
+   * JEDNA wielkosc karty na cale rozdanie.
+   *
+   * Poprzednia wersja zmniejszala karty w licytacji, zeby zmiescic drabinke odzywek w srodku
+   * stolu — i w chwili zawarcia kontraktu wszystko skakalo do wiekszego rozmiaru. To dokladnie
+   * mechanika, ktorej 247bridge NIE ma: tam uklad ma jedna skale, a pudelko odzywek jest
+   * nakladka NAD stolem, nie elementem, ktory przesuwa reszte. Robimy tak samo: klaster
+   * licytacji (zapis + pudelko) jest pozycjonowany absolutnie w komorce srodka, zakotwiczony do
+   * jej dolu — tuz nad wlasna reka — i rosnie W GORE, nad zakryte karty przeciwnika. Wlasna reka
+   * nigdy nie jest zaslonieta, a nic w przeplywie dokumentu nie zmienia rozmiaru.
    */
-  .bo-app--table .bo-felt__rail:has(.bo-centre-auction) {
-    --card-w: clamp(36px, min(9vw, calc((100cqh - 130px) / 9)), 128px);
+  .bo-app--table .bo-felt__center {
+    position: relative;
   }
 
   .bo-app--table .bo-centre-auction {
-    height: 100%;
-    /* Bez tego zapis licytacji rozciagal srodkowa kolumne na ~580px i stol w fazie licytacji
-       rozpychal sie na cale okno, mimo ze pudelko odzywek ma 26rem. Rownanie obu do tej samej
-       szerokosci trzyma stol w tych samych proporcjach przez cale rozdanie. */
-    max-width: min(100%, 26rem);
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: min(100%, 26rem);
+    height: auto;
+    max-height: none;
     min-height: 0;
-    justify-content: start;
+    justify-content: flex-end;
+    z-index: var(--z-hud);
   }
 
-  .bo-app--table .bo-centre-auction .bo-bidbox {
-    flex: 1;
-    min-height: 0;
-  }
-
-  /* `flex: 1` na wierszach, nie tylko na pudelku — inaczej pudelko rosnie, a wiersze zostaja
-     przy naturalnej wysokosci i cala nadwyzka zbiera sie jako pusty pas pod REKONTRA. */
-  .bo-app--table .bo-centre-auction .bo-bidbox__row {
-    flex: 1;
-    min-height: 0;
-  }
-
+  /* Wiersze drabinki maja naturalna wysokosc — panel i tak nie jest ograniczony komorka. */
   .bo-app--table .bo-centre-auction .bo-bid {
-    min-height: 0;
-    height: 100%;
+    min-height: 1.9rem;
   }
 
   .bo-app--table .bo-table-column {
@@ -470,6 +466,18 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--s-2);
+  /* Stala wysokosc w kazdej fazie — od niej zalezy wysokosc sukna, a od sukna wielkosc karty. */
+  min-height: 2.75rem;
+}
+
+.bo-hud__toggle--static {
+  cursor: default;
+}
+
+.bo-hud__status {
+  color: var(--text-2);
+  font-size: var(--text-sm);
+  font-weight: 600;
 }
 
 .bo-hud__toggle {
@@ -1053,4 +1061,35 @@ body {
     gap: var(--s-2);
     padding-block: var(--s-1);
   }
+}
+
+/* ---------------------------------------------------------------------------
+ * Grafika ze sprite'a (components/Art.tsx)
+ * ------------------------------------------------------------------------ */
+
+/* Sprite jest wstrzykniety do DOM tylko po to, zeby <use> mial do czego siegac. */
+.bo-art-sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.bo-art {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Ikona liniowa: `currentColor`, wiec bierze kolor tekstu, przy ktorym stoi. */
+.bo-icon {
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  color: currentColor;
+}
+
+/* Linia statusu pod stolem: stala wysokosc, zeby pasek akcji — a za nim sukno i karta — nie
+   zmienialy rozmiaru miedzy fazami ani przy zmianie ruchu. */
+.bo-actions__wait {
+  min-height: 1.5em;
 }

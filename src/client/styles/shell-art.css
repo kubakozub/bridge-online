@@ -1,0 +1,39 @@
+/*
+ * Powloka: logo i ikony z paczki Claude Design (components/Art.tsx) wpiete w Table i Lobby.
+ *
+ * Grafika bierze kolory ze zmiennych CSS w srodku sprite'a, wiec tutaj sa tylko WYMIARY
+ * i odstepy. Zadnych kolorow — inaczej motyw ciemny przestalby dzialac na tych elementach.
+ * Odstep ikona–etykieta w przyciskach daje juz `gap` na .bo-btn / .bo-rail__tab / .bo-hud__toggle.
+ */
+
+/* Sygnet w pasku gornym: stoi obok nazwy w .bo-topbar__brand (inline-flex + gap). */
+.bo-topbar__logo {
+  flex-shrink: 0;
+}
+
+/* Pelne logo w hero Lobby: ~280 px na desktopie, na telefonie tyle, ile jest miejsca. */
+.bo-hero__logo {
+  display: block;
+  inline-size: 280px;
+  max-inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 480 / 120;
+  margin: 0 auto var(--s-4);
+}
+
+/* Pusty stol w "Poczekalni": dekoracja nad tytulem, ~220 px, dopasowuje sie do karty. */
+.bo-centre-card__art {
+  display: block;
+  inline-size: 220px;
+  max-inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 400 / 300;
+  margin: 0 auto var(--s-1);
+}
+
+/* Podpowiedz "Pokaz/Ukryj licytacje" jest zwyklym <span>; ikona historii stoi przed tekstem. */
+.bo-hud__hint--icon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
