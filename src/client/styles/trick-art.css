@@ -1,0 +1,60 @@
+/*
+ * Grafika ze sprite'a wpieta w srodek stolu (components/TrickArea.tsx).
+ *
+ * Kolory siedza W SRODKU symboli (var(--felt-3), var(--accent)...), wiec ten plik ustala tylko
+ * geometrie i ruch. Wszystko, co dotyczy pozycji slotow, zamiatania i `data-winner`, zostaje
+ * w table.css — tu jedynie podkladamy tlo i nakladamy blysk.
+ */
+
+/* --- Pole lewy: rozjasnienie sukna pod czterema kartami ---------------------
+   Lezy w tej samej warstwie co sloty (`.bo-trick` ma wlasny kontekst stosu przez z-index), ale
+   jest pierwsze w DOM i ma z-index 0, wiec maluje sie POD slotami, symbolem atutu i podpisem
+   zwyciezcy, ktore stoja dalej w drzewie. Nie nadaje kolorow — symbol sam bierze --felt-3. */
+.bo-trick__well {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --- Wlasnie zagrana: jednorazowy blysk krawedzi na ostatniej karcie lewy ---
+   Drugi <svg> o tym samym viewBox (0 0 240 336) co karta, dokladnie nad nia. Slot juz jest
+   pozycjonowany (table.css), wiec inset: 0 pokrywa karte 1:1. `overflow: visible`, bo symbol
+   rysuje obrys o 1 jednostke poza viewBox — to jest wlasnie ta poswiata przy krawedzi.
+   Element montuje sie razem z nowym slotem (klucz = karta), wiec animacja startuje od zera
+   przy kazdej nowej karcie i nie restartuje sie przy zwyklym przerysowaniu. */
+.bo-trick__flash {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  overflow: visible;
+  pointer-events: none;
+  animation: bo-trick-flash 600ms var(--ease-out) forwards;
+}
+
+@keyframes bo-trick-flash {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* Blysk to sam zanik krycia, bez przesuniecia — nie jest ruchem w sensie
+   prefers-reduced-motion, a niesie informacje (ktora karta doszla ostatnia),
+   wiec zostaje takze przy ograniczonym ruchu. */
+
+
+/* Rozjasnienie pola lewy ma prowadzic wzrok, nie rysowac tarczy — na jasnym suknie pelna
+   nieprzezroczystosc symbolu czytala sie jako wyrazny dysk. */
+.bo-trick__well {
+  opacity: 0.72;
+}

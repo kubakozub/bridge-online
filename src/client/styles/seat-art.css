@@ -1,0 +1,90 @@
+/*
+ * SeatPlate — grafika z paczki Claude Design: awatar, zeton rozdajacego, lampka polaczenia
+ * i pierscien kolejki. Ten plik DOKLADA sie do table.css, nie zastepuje go: uklad plakietki,
+ * jej klasy i luk odliczania zostaja. Tu sa tylko wymiary rysunkow oraz nadpisania tam,
+ * gdzie symbol ze sprite'a zajmuje miejsce elementu rysowanego dotad samym CSS (kropka
+ * polaczenia, litera "R"). Kolory biora sie ze srodka sprite'a przez tokeny — nic tu ich
+ * nie ustawia.
+ */
+
+/* --- Awatar: obok litery miejsca, ta sama wysokosc co badge ---------------- */
+.bo-seat__avatar {
+  flex: none;
+  inline-size: 1.875rem;
+  block-size: 1.875rem;
+  border-radius: var(--r-pill);
+}
+
+/* --- Pierscien kolejki: tlo za litera miejsca, wspolsrodkowy z lukiem czasu -- */
+/* Rysowany na ujemnym z-index wewnatrz kontekstu .bo-seat: lezy nad tlem plakietki,
+   pod tlem badge'a i pod lukiem odliczania (stroke-dashoffset z kodu zostaje na wierzchu). */
+.bo-seat__ring {
+  position: absolute;
+  inset-block-start: -8px;
+  inset-inline-start: -8px;
+  inline-size: calc(100% + 16px);
+  block-size: calc(100% + 16px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --- Zeton rozdajacego: mosiezny symbol zamiast obrysowanej litery ---------- */
+/* Symbol sam ma obwodke i tlo, wiec ramka i kolor z table.css poszlyby w dwojnasob. */
+.bo-seat .bo-seat__dealer {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 0;
+  background: none;
+}
+
+.bo-seat__dealer-art {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* --- Lampka polaczenia: symbol conn-* zamiast kolorowej kropki -------------- */
+/* Selektor z atrybutem wygrywa z .bo-seat__dot[data-conn='online'] z table.css,
+   ktory nadal ustawialby tlo pod przezroczystym symbolem. */
+.bo-seat .bo-seat__dot,
+.bo-seat .bo-seat__dot[data-conn] {
+  display: inline-grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0;
+  background: transparent;
+}
+
+.bo-seat__dot-art {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+/* --- Przyciski wolnego miejsca: ikona obok etykiety ------------------------- */
+.bo-seat__action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+/* --- Waski ekran: te same proporcje co badge 1.6rem z table.css ------------- */
+@media (max-width: 719px) {
+  .bo-seat__avatar {
+    inline-size: 1.375rem;
+    block-size: 1.375rem;
+  }
+
+  .bo-seat__ring {
+    inset-block-start: -6px;
+    inset-inline-start: -6px;
+    inline-size: calc(100% + 12px);
+    block-size: calc(100% + 12px);
+  }
+
+  .bo-seat .bo-seat__dealer {
+    width: 1rem;
+    height: 1rem;
+  }
+}

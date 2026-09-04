@@ -1,0 +1,216 @@
+/*
+ * Design tokens for Bridge Online.
+ *
+ * This file is the single source of truth for colour, type, spacing, elevation and motion.
+ * Components must never hard-code a colour or a shadow - reach for a token. When Claude Design
+ * delivers the final artwork, only the values here (and the card sprite) change.
+ *
+ * Two themes ship: `felt` (the default, a dark card-room table) and `daylight` (a light,
+ * high-contrast theme for bright rooms and for players who find dark UI hard to read).
+ */
+
+:root,
+[data-theme='felt'] {
+  color-scheme: dark;
+
+  /* --- Table surface ------------------------------------------------------ */
+  --felt-1: #0d2b22; /* deepest felt, page background */
+  --felt-2: #12382c; /* table body */
+  --felt-3: #174535; /* raised felt, e.g. the trick area */
+  --felt-rail: #3a2317; /* the wooden rail around the table */
+  --felt-rail-hi: #5c3a26;
+
+  /* --- Surfaces (panels, sheets, menus) ----------------------------------- */
+  --surface-1: #10201c;
+  --surface-2: #16302a;
+  --surface-3: #1e3f37;
+  --surface-glass: rgb(12 30 26 / 0.82);
+  --border-subtle: rgb(255 255 255 / 0.09);
+  --border-strong: rgb(255 255 255 / 0.18);
+
+  /* --- Text --------------------------------------------------------------- */
+  --text-1: #f2f6f3; /* primary */
+  --text-2: #b9c9c1; /* secondary */
+  --text-3: #7d938a; /* tertiary / disabled */
+  --text-on-accent: #08201a;
+
+  /* --- Brand + status ----------------------------------------------------- */
+  --accent: #f0c05a; /* brass - the primary action colour */
+  --accent-hover: #f7cf78;
+  --accent-quiet: rgb(240 192 90 / 0.16);
+  --info: #6cb8e6;
+  --success: #64c98a;
+  --warning: #e8a13c;
+  --danger: #e2604f;
+
+  /* --- Seats -------------------------------------------------------------- */
+  --seat-you: #f0c05a;
+  --seat-partner: #7ad0a8;
+  --seat-opponent: #8fa9c9;
+  --seat-active-ring: #f0c05a;
+
+  /* --- Vulnerability ------------------------------------------------------ */
+  --vul-yes: #e2604f;
+  --vul-no: #4e8f6d;
+
+  /* --- Cards (consumed by the generated sprite) --------------------------- */
+  --card-face: #fdfdfb;
+  --card-edge: rgb(10 20 16 / 0.35);
+  --card-back: #123c5a;
+  --card-back-ink: rgb(255 255 255 / 0.55);
+
+  /* Two-colour deck by default; `[data-deck='four-colour']` overrides below. */
+  --suit-spade: #16161d;
+  --suit-heart: #c8102e;
+  --suit-diamond: #c8102e;
+  --suit-club: #16161d;
+
+  /* --- Type --------------------------------------------------------------- */
+  --font-ui: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+
+  /* --- Space (4px scale) --------------------------------------------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+
+  /* --- Radius + elevation -------------------------------------------------- */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+
+  --shadow-card: 0 2px 4px rgb(0 0 0 / 0.28), 0 8px 20px rgb(0 0 0 / 0.22);
+  --shadow-card-lifted: 0 6px 12px rgb(0 0 0 / 0.34), 0 18px 40px rgb(0 0 0 / 0.3);
+  --shadow-panel: 0 12px 32px rgb(0 0 0 / 0.4);
+  --shadow-inset-felt: inset 0 0 120px rgb(0 0 0 / 0.45);
+
+  /* --- Motion -------------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 120ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+  /* Zamiatanie lewy w DWOCH krokach — bo to sa dwie rozne potrzeby:
+     --dur-trick-hold: komplet czterech kart stoi nieruchomo, zeby dalo sie
+       ODCZYTAC, co dolozyl czwarty gracz (skarga uzytkownika: znikalo za szybko);
+     --dur-trick: czas samego zjazdu kart do zwyciezcy.
+     Timer w JS czeka na SUME obu, inaczej stan wyczyscilby sie w trakcie ruchu. */
+  --dur-trick-hold: 1500ms;
+  --dur-trick: 700ms;
+
+  /* --- Layout -------------------------------------------------------------- */
+  /* Karta skaluje sie SZEROKOSCIA I WYSOKOSCIA okna. Sam warunek na szerokosc
+     dawal na laptopie 1366x768 stol wyzszy niz ekran (dokument 971 px) i wlasna
+     reka wypadala pod krawedzia — dokladnie w chwili licytacji, gdy pudelko
+     odzywek zajmuje srodek. 8.4vh trzyma wysokosc karty w ryzach na niskich
+     ekranach, nie ruszajac wygladu na duzych monitorach. */
+  --card-w: clamp(44px, min(6.2vw, 8.4vh), 84px);
+  --card-h: calc(var(--card-w) * 336 / 240);
+  --hand-overlap: 0.42; /* fraction of a card that stays visible when fanned */
+  --z-table: 1;
+  --z-cards: 10;
+  --z-hud: 20;
+  --z-sheet: 40;
+  --z-toast: 60;
+}
+
+/*
+ * Motyw jasny jest DOMYSLNY.
+ *
+ * Blok wyzej (`:root, [data-theme='felt']`) zostaje pelna baza — definiuje KAZDY token, takze
+ * te niezwiazane z motywem (typografia, odstepy, promienie, ruch, uklad). Gdyby zamienic go
+ * miejscami z jasnym, polowa tokenow zostalaby bez wartosci, bo blok jasny niesie same kolory.
+ *
+ * Dlatego jasny wchodzi jako nadpisanie przy KAZDYM stanie procz jawnie wybranego ciemnego:
+ * `:root:not([data-theme='felt'])` ma wyzsza specyficznosc niz `:root` z bazy, wiec wygrywa,
+ * gdy atrybutu nie ma w ogole (pierwsze malowanie, zanim ruszy JS) albo gdy wybrano `daylight`.
+ */
+:root:not([data-theme='felt']),
+[data-theme='daylight'] {
+  color-scheme: light;
+
+  --felt-1: #eef1ec;
+  --felt-2: #34926b;
+  --felt-3: #3da878;
+  --felt-rail: #b07f4f;
+  --felt-rail-hi: #c99a68;
+
+  --surface-1: #ffffff;
+  --surface-2: #f5f7f4;
+  --surface-3: #e8ece7;
+  --surface-glass: rgb(255 255 255 / 0.92);
+  --border-subtle: rgb(16 32 28 / 0.12);
+  --border-strong: rgb(16 32 28 / 0.24);
+
+  --text-1: #16211d;
+  --text-2: #46554f;
+  --text-3: #78877f;
+  --text-on-accent: #1d1403;
+
+  --accent: #b8801a;
+  --accent-hover: #a2700f;
+  --accent-quiet: rgb(184 128 26 / 0.14);
+  --info: #2f7fb5;
+  --success: #2f8f5b;
+  --warning: #c9822a;
+  --danger: #c0392f;
+
+  --seat-you: #b8801a;
+  --seat-partner: #227a54;
+  --seat-opponent: #3d5f8a;
+  --seat-active-ring: #b8801a;
+
+  --vul-yes: #c0392f;
+  --vul-no: #2f8f5b;
+
+  /* Biala karta na jasnym suknie NIE wydzieli sie cieniem — musi ja odciac krawedz.
+     Stad .32 zamiast .22: przy slabszej wartosci karty zlewaly sie z blatem. */
+  --card-face: #ffffff;
+  --card-edge: rgb(16 32 28 / 0.32);
+  --card-back: #1d5f86;
+  --card-back-ink: rgb(255 255 255 / 0.62);
+
+  /* Na jasnym tle ciezki cien robi sie brudny — krotszy i slabszy niz w motywie ciemnym. */
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.16), 0 6px 14px rgb(0 0 0 / 0.12);
+  --shadow-card-lifted: 0 4px 8px rgb(0 0 0 / 0.2), 0 14px 30px rgb(0 0 0 / 0.18);
+  --shadow-panel: 0 10px 28px rgb(0 0 0 / 0.18);
+  --shadow-inset-felt: inset 0 0 100px rgb(0 0 0 / 0.16);
+}
+
+/*
+ * The four-colour deck is a genuine accessibility feature, not a gimmick: telling hearts from
+ * diamonds at a glance is the single most common misplay in online bridge.
+ */
+[data-deck='four-colour'] {
+  --suit-spade: #16161d;
+  --suit-heart: #c8102e;
+  --suit-diamond: #1c62c4;
+  --suit-club: #157a45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 1ms;
+    --dur-base: 1ms;
+    --dur-slow: 1ms;
+    /* Ograniczony ruch wylacza ANIMACJE, ale czas na odczytanie karty ZOSTAJE. */
+    --dur-trick-hold: 1600ms;
+    --dur-trick: 1ms;
+  }
+}

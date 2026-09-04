@@ -1,0 +1,35 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "bridge-online",
+  "main": "src/server/index.ts",
+  // Jedyne publiczne wejscie to brydz.uk: adres *.workers.dev i podglady wersji (preview URLs)
+  // sa wylaczone, zeby ta sama gra nie zyla pod drugim, niekanonicznym adresem.
+  "workers_dev": false,
+  "preview_urls": false,
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS",
+    // Routing aplikacji jest HASHOWY (/#/t/KOD), wiec serwer zawsze dostaje samo "/" — fallback SPA
+    // nie byl do niczego potrzebny, a maskowal bledy: kazda literowka w sciezce i kazdy brakujacy
+    // plik wracaly jako HTTP 200 z HTML-em. Teraz brakujacy zasob to uczciwe 404 (patrz index.ts).
+    "not_found_handling": "none"
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "TABLES", "class_name": "TableDurableObject" }]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["TableDurableObject"] }
+  ],
+  // Domena gracza: brydz.uk (strefa na koncie Kuba1k). custom_domain=true zaklada
+  // rekord i certyfikat sam — nie trzeba dodawac CNAME recznie.
+  "routes": [
+    { "pattern": "brydz.uk", "custom_domain": true },
+    { "pattern": "www.brydz.uk", "custom_domain": true }
+  ],
+  "observability": { "enabled": true },
+  "vars": {
+    "PUBLIC_APP_NAME": "Bridge Online"
+  }
+}

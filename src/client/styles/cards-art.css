@@ -1,0 +1,70 @@
+/*
+ * Card state overlays from the Claude Design art pack (card-states.svg, "Pakiet 5").
+ *
+ * A card in hand wears up to three extra layers, each a second <svg viewBox="0 0 240 336">
+ * laid over the face and pointing at a `state-*` symbol in the art sprite (mounted once by
+ * <ArtSpriteMount>). The symbols take their colours from the tokens (`--accent`, `--surface-3`,
+ * `--text-3`), so they follow the theme on their own - nothing here sets a colour.
+ *
+ * Everything in cards.css stays as it is: the lift, the lifted shadow, the focus ring and the
+ * grayscale filter on a dimmed card. This file only positions the overlays and fades the hover
+ * outline in and out. No overlay is ever a pointer target and none changes the card's box.
+ */
+
+/* The overlays are absolutely positioned, so the card must be their containing block. */
+.bo-card {
+  position: relative;
+}
+
+.bo-card__state {
+  position: absolute;
+  inset: 0;
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  /* The <button> underneath owns the click and the hover; the overlay must never steal them. */
+  pointer-events: none;
+}
+
+/* --- Legal (is-playable): a short shadow under the bottom edge ------------ */
+
+/* The shadow bar in `state-legal` runs 2 units past the 336-high viewBox; let it show. */
+.bo-card__state--legal {
+  overflow: visible;
+}
+
+/* --- Illegal (is-dimmed): hatching over the face -------------------------- */
+
+/* `state-illegal` hatches far beyond its viewBox. Clip it explicitly so the strokes can never
+   spill onto the neighbouring cards in the fan. The grayscale/opacity filter from cards.css
+   applies to the whole card, this overlay included - the two read together. */
+.bo-card__state--illegal {
+  overflow: hidden;
+}
+
+/* --- Hover / focus: the accent outline ----------------------------------- */
+
+/* Always in the tree for an interactive card, invisible until the card is pointed at or
+   focused. It joins the lift and the lifted shadow from cards.css rather than replacing them. */
+.bo-card__state--hover {
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+/* Same hover gate as the lift in cards.css, so the outline and the lift move together and a
+   tap on a touch screen never leaves a stuck outline behind. */
+@media (hover: hover) {
+  .bo-card.is-playable:hover .bo-card__state--hover {
+    opacity: 1;
+  }
+}
+
+.bo-card.is-playable:focus-visible .bo-card__state--hover {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bo-card__state--hover {
+    transition: none;
+  }
+}

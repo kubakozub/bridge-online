@@ -124,8 +124,8 @@ Potem:
 npm run deploy
 ```
 
-To buduje klienta do `dist/client` i wypycha Workera razem z zasobami statycznymi. Wrangler
-wypisze adres w postaci `https://bridge-online.<twoja-subdomena>.workers.dev`.
+To buduje klienta do `dist/client` i wypycha Workera razem z zasobami statycznymi. Gra jest
+dostępna pod adresem https://brydz.uk (adres `*.workers.dev` jest wyłączony w `wrangler.jsonc`).
 
 Durable Objects z magazynem SQLite działają na planie darmowym — migracja `v1` w
 `wrangler.jsonc` tworzy klasę `TableDurableObject` przy pierwszym wdrożeniu.
@@ -175,24 +175,29 @@ rozgrywa 150 pełnych rozdań, sprawdzając po każdym ruchu, że żadna karta n
 
 ## Grafika
 
-Talia w repozytorium jest generowana proceduralnie:
+Talia i cała grafika interfejsu pochodzą z paczki Claude Design (brief:
+[`docs/CLAUDE-DESIGN-PROMPT.md`](docs/CLAUDE-DESIGN-PROMPT.md)). Wgranie nowej paczki to dwa polecenia:
 
 ```bash
-npm run cards
+node scripts/import-art.mjs <katalog-z-rozpakowaną-paczką>
+node scripts/embed-art.mjs
 ```
 
-Podgląd wszystkich kart: `/dev/cards.html` przy działającym serwerze deweloperskim.
+`import-art` **wycina metadane C2PA** (~7,7 KB podpisu pochodzenia w każdym pliku — w awatarze na
+8 KB rysunek to 0,4 KB), waliduje kontrakt z sekcji 5 briefu i odmawia importu pliku, który go łamie.
+Jeśli w paczce jest talia (`public/cards/sprite.svg`), po imporcie uruchom jeszcze
+`node scripts/embed-sprite.mjs` — sprawdza komplet 52 kart i `viewBox 0 0 240 336`.
 
-Docelowa, rysowana grafika powstaje z promptu w
-[`docs/CLAUDE-DESIGN-PROMPT.md`](docs/CLAUDE-DESIGN-PROMPT.md). Po otrzymaniu plików:
+`embed-art` składa `public/art/*.svg` w jeden sprite i wbudowuje go w bundle
+(`src/client/assets/artSprite.ts`). Dlaczego inline, a nie `<img>`: rysunki biorą kolory ze zmiennych
+CSS, które **nie przenikają** do SVG ładowanego jako obraz zewnętrzny — w `<img>` na ciemnym suknie
+pokazałyby się jasne fallbacki. Wstrzyknięty do DOM sprite dziedziczy kaskadę strony.
 
-```bash
-# podmień public/cards/sprite.svg, potem:
-node scripts/embed-sprite.mjs
-```
+W kodzie: `<Art id="art-logo-mark"/>`, `<Icon name="copy"/>`, `avatarIdFor(playerId)`,
+`robotIdFor(level)` — patrz `src/client/components/Art.tsx`. Dostępne `id` wylicza `ART_IDS`.
 
-Skrypt sprawdza kontrakt integracyjny (52 symbole o właściwych ID, `viewBox` `0 0 240 336`, brak
-skryptów i odwołań zewnętrznych) i odmawia wbudowania grafiki, która go łamie.
+Podgląd talii: `/dev/cards.html` przy działającym serwerze deweloperskim. Talia awaryjna,
+generowana proceduralnie: `npm run cards`.
 
 ---
 

@@ -1,0 +1,36 @@
+{
+  "name": "bridge-online",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Online contract bridge for two remote humans + AI robots, on Cloudflare Workers + Durable Objects",
+  "scripts": {
+    "dev": "concurrently -k -n vite,worker -c cyan,magenta \"vite\" \"wrangler dev\"",
+    "dev:client": "vite",
+    "dev:worker": "wrangler dev",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "deploy": "npm run build && wrangler deploy",
+    "cf-typegen": "wrangler types",
+    "cards": "node scripts/generate-cards.mjs",
+    "dev:remote": "node scripts/dev-remote.mjs"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5",
+    "@types/node": "^26.4.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "typescript": "^5",
+    "vite": "^6",
+    "vitest": "^3",
+    "wrangler": "^4"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
