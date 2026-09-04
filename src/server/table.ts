@@ -549,7 +549,7 @@ export class TableDurableObject implements DurableObject {
 
       case 'requestUndo': {
         if (!seat || !room.settings.allowUndo) return;
-        const target = this.undoTargetIndex(room);
+        const target = this.undoTargetIndex(room, seat);
         if (target === null) {
           this.sendTo(ws, {
             t: 'error',
@@ -565,7 +565,7 @@ export class TableDurableObject implements DurableObject {
         room.undoRequest = {
           by: seat,
           toActionIndex: target,
-          description: 'Cofnięcie ostatniego ruchu',
+          description: 'Cofnięcie ostatniego własnego ruchu',
           pending: opponents,
         };
         if (opponents.length === 0) await this.resolveUndo(room, true);
@@ -626,10 +626,13 @@ export class TableDurableObject implements DurableObject {
     }
 
     await this.save();
-    await this.broadcast(room);
-    // Arm the alarm first so a robot turn is never left with nothing to trigger it, then let the
-    // robots move inline. The human's own action is already on the wire at this point.
+    // Uzbrojenie zegara i alarmu PRZED rozeslaniem stanu. Wczesniej ramka szla pierwsza i niosla
+    // turnDeadline z POPRZEDNIEJ tury (albo null): odliczanie przy plakietce pokazywalo nie to,
+    // co trzeba, a klient dowiadywal sie o terminie dopiero z nastepnej ramki. Przy okazji alarm
+    // jest uzbrojony, zanim ruszy petla robotow — wywlaszczenie w jej trakcie nie zostawia stolu
+    // bez niczego, co by go obudzilo.
     await this.scheduleAlarm();
+    await this.broadcast(room);
     await this.runInlineBotTurns(room);
     await this.scheduleAlarm();
   }
@@ -778,11 +781,28 @@ export class TableDurableObject implements DurableObject {
     return this.controllerFor(room, turn) === actor ? turn : null;
   }
 
-  private undoTargetIndex(room: Room): number | null {
+  /**
+   * Indeks w historii, do ktorego cofamy: ostatni WLASNY ruch gracza, a nie ostatni ruch przy stole.
+   *
+   * Pierwsza wersja brala ostatnia akcje w ogole. Poniewaz roboty odpowiadaja inline, zaraz po
+   * ruchu czlowieka ostatnia akcja jest zawsze ruch robota — cofniecie zdejmowalo ruch robota,
+   * robot natychmiast ruszal ponownie i dla gracza nic sie nie zmienialo. Cofniecie ma zdjac
+   * ruch PROSZACEGO i wszystko, co po nim nastapilo; roboty zagraja od nowa.
+   *
+   * "Wlasny" liczy sie przez sterujacego, nie wlasciciela karty: rozgrywajacy cofa zagranie z
+   * reki dziadka, a po przejeciu rozgrywki dziadek-czlowiek cofa zagranie z reki rozgrywajacego.
+   *
+   * Skan zatrzymuje sie na granicy rozdania (deal / nextBoard). Bez tego prosba o cofniecie zaraz
+   * po "Nastepne rozdanie" — zanim ktokolwiek sie odezwal — cofnelaby POPRZEDNIE rozdanie do
+   * srodka rozgrywki.
+   */
+  private undoTargetIndex(room: Room, requester: Seat): number | null {
     const history = room.game.history;
     for (let i = history.length - 1; i >= 0; i -= 1) {
-      const kind = history[i].kind;
-      if (kind === 'call' || kind === 'play') return i;
+      const action = history[i];
+      if (action.kind === 'deal' || action.kind === 'nextBoard') return null;
+      if (action.kind === 'call' && action.seat === requester) return i;
+      if (action.kind === 'play' && this.controllerFor(room, action.seat) === requester) return i;
     }
     return null;
   }
@@ -838,6 +858,8 @@ export class TableDurableObject implements DurableObject {
         if (!this.makeBotMove(room)) return;
 
         room.botMoveAt = null;
+        // Nastepne miejsce moze byc czlowiekiem z zegarem — jego termin ma byc juz w tej ramce.
+        await this.scheduleAlarm();
         await this.broadcast(room);
       }
     } catch (err) {
@@ -1017,6 +1039,7 @@ export class TableDurableObject implements DurableObject {
 
     if (changed) {
       room.rev += 1;
+      await this.scheduleAlarm();
       await this.save();
       await this.broadcastState(room);
     }
