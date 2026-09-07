@@ -441,7 +441,8 @@ export function Lobby(): JSX.Element {
       </main>
 
       <footer className="bo-lobby__foot">
-        <p>Wszystko dzieje się w przeglądarce i na jednym serwerze brzegowym. Bez kont, bez reklam.</p>
+        <p>Bezpłatny brydż w przeglądarce. Bez kont, bez reklam.</p>
+        <p><a href="/jak-grac/">Jak zacząć grę i ustawić większe karty</a></p>
       </footer>
     </div>
   );
