@@ -9,12 +9,12 @@
  * pointing into that one injected sprite.
  */
 
-import { useEffect, useState } from 'react';
-import { CardSpriteMount } from './components/PlayingCard';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { ArtSpriteMount } from './components/Art';
 import { Lobby } from './Lobby';
-import { Table } from './Table';
+const Table = lazy(() => import('./Table').then(module => ({default: module.Table})));
 import './styles/app.css';
+import './styles/comfort.css';
 
 /** `#/t/ABC123` -> `ABC123`. Anything else -> null, which means the lobby. */
 function roomFromHash(hash: string): string | null {
@@ -41,10 +41,9 @@ export function App(): JSX.Element {
 
   return (
     <>
-      <CardSpriteMount />
       <ArtSpriteMount />
       {/* Keying by room code guarantees a brand-new socket and brand-new state per table. */}
-      {room !== null ? <Table roomCode={room} key={room} /> : <Lobby />}
+      {room !== null ? <Suspense fallback={<p role="status" className="bo-centre-card">Przygotowuję stół…</p>}><Table roomCode={room} key={room} /></Suspense> : <Lobby />}
     </>
   );
 }

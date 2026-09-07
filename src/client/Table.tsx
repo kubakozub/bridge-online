@@ -29,6 +29,8 @@ import { ChatPanel } from './components/ChatPanel';
 import { ClaimDialog } from './components/ClaimDialog';
 import { ContractBadge } from './components/ContractBadge';
 import { Hand } from './components/Hand';
+import { cardAriaLabel, PlayingCard, CardSpriteMount } from './components/PlayingCard';
+import './styles/comfort.css';
 import { Scoreboard } from './components/Scoreboard';
 import { SeatPlate } from './components/SeatPlate';
 import { SettingsSheet } from './components/SettingsSheet';
@@ -138,6 +140,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [auctionOpen, setAuctionOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [claimOpen, setClaimOpen] = useState(false);
   const [claimDismissed, setClaimDismissed] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -201,6 +204,8 @@ export function Table({ roomCode }: TableProps): JSX.Element {
     return legalCalls(board.auction, board.dealer, yourSeat);
   }, [board, yourSeat, yourTurnToCall]);
 
+  const previousTrick = play?.tricks.filter(trick => trick.cards.length === 4).at(-1);
+
   const yourHand: Card[] | undefined = yourSeat !== null ? board?.hands.visible[yourSeat] : undefined;
 
   // ---- turn clock ---------------------------------------------------------
@@ -237,7 +242,11 @@ export function Table({ roomCode }: TableProps): JSX.Element {
 
   // ---- actions ------------------------------------------------------------
 
-  const onPlayCard = useCallback((card: Card) => send({ t: 'play', card }), [send]);
+  useEffect(() => { setSelectedCard(null); }, [controlledSeat, board?.boardNumber, play?.tricks.length, play?.tricks.at(-1)?.cards.length]);
+  const onPlayCard = useCallback((card: Card) => {
+    if (prefs.confirmMoves) setSelectedCard(card);
+    else send({ t: 'play', card });
+  }, [send, prefs.confirmMoves]);
   const onMakeCall = useCallback((call: Call) => send({ t: 'call', call }), [send]);
   const onSit = useCallback((seat: Seat) => send({ t: 'sit', seat }), [send]);
   const onAddBot = useCallback(
@@ -374,14 +383,15 @@ export function Table({ roomCode }: TableProps): JSX.Element {
     return (
       <Hand
         cards={visible ?? []}
+        selected={interactive ? selectedCard : null}
         count={count}
         faceDown={visible === undefined}
-        orientation={orientationOf(position)}
+        orientation={isWide ? orientationOf(position) : 'horizontal'}
         legal={interactive ? legalPlays : undefined}
         interactive={interactive}
         onPlay={interactive ? onPlayCard : undefined}
-        size={position === 'bottom' ? 'md' : 'sm'}
-        compact={position === 'left' || position === 'right'}
+        size={visible === undefined ? 'xs' : position === 'bottom' ? 'md' : 'sm'}
+        compact={isWide && (position === 'left' || position === 'right')}
         trump={contract?.strain}
         label={`Ręka ${SEAT_GENITIVE_PL[seat]}${mine ? ' — Twoja' : ''}`}
       />
@@ -483,9 +493,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
                 ? 'Twoja kolej — zalicytuj.'
                 : `Licytuje: ${SEAT_LABEL_PL[seatToBid]}`}
           </p>
-          {isWide && yourTurnToCall ? (
-            <BiddingBox legal={legalBids} onCall={onMakeCall} hint={null} />
-          ) : null}
+
         </div>
       );
     }
@@ -594,6 +602,7 @@ export function Table({ roomCode }: TableProps): JSX.Element {
     // `--table` przykrywa cala wysokosc okna: stol ma wypelniac ekran, a nie plywac
     // w pustym suknie z paskiem przewijania pod spodem.
     <div className="bo-app bo-app--table">
+      <CardSpriteMount />
       {header}
 
       {error !== null ? (
@@ -690,10 +699,15 @@ export function Table({ roomCode }: TableProps): JSX.Element {
           </TableFelt>
 
           <div className="bo-actions">
+            {selectedCard !== null && legalPlays.includes(selectedCard) ? <div className="bo-confirm" role="group" aria-label="Potwierdzenie karty">
+              <strong aria-live="polite">{cardAriaLabel(selectedCard)}</strong>
+              <button className="bo-btn bo-btn--primary" onClick={() => { send({ t: 'play', card: selectedCard }); setSelectedCard(null); }}>Zagraj wybraną kartę</button>
+              <button className="bo-btn" onClick={() => setSelectedCard(null)}>Anuluj</button>
+            </div> : null}
             {/* On a wide screen the bidding box is in the centre of the felt; on a phone the
                 centre is far too small for a 7x5 ladder, so it docks here instead. */}
             {!isWide && phase === 'auction' && yourTurnToCall ? (
-              <BiddingBox legal={legalBids} onCall={onMakeCall} hint={null} />
+              <BiddingBox legal={legalBids} onCall={onMakeCall} hint={null} confirm={prefs.confirmMoves} />
             ) : null}
 
             {/* Linia statusu istnieje ZAWSZE, gdy jest rozdanie — o stalej wysokosci. Wczesniej
@@ -832,6 +846,14 @@ export function Table({ roomCode }: TableProps): JSX.Element {
           </div>
 
           <div className="bo-rail__panel">
+            {previousTrick ? <details className="bo-last-trick"><summary>Ostatnia lewa</summary>
+              <p>Bierze: {previousTrick.winner ? SEAT_LABEL_PL[previousTrick.winner] : '—'}</p>
+              <div>{previousTrick.cards.map(({seat,card}) => <figure key={seat}><figcaption>{seat}</figcaption><PlayingCard card={card} size="sm" /></figure>)}</div>
+            </details> : null}
+            {isWide && phase === 'auction' ? <section className="bo-rail-bidding" aria-label="Twoja licytacja">
+              <h2>{yourTurnToCall ? 'Twoja kolej — zalicytuj' : 'Czekaj na swoją kolej'}</h2>
+              <BiddingBox legal={legalBids} onCall={onMakeCall} disabled={!yourTurnToCall} confirm={prefs.confirmMoves} />
+            </section> : null}
             <div
               role="tabpanel"
               id="bo-panel-score"

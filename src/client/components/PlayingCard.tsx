@@ -245,6 +245,11 @@ export function PlayingCard({
   const face = (
     <svg className="bo-card__face" viewBox={CARD_VIEWBOX} aria-hidden="true" focusable="false">
       <use href={symbolId} />
+      {!showsBack && card !== null ? <g className="bo-card__jumbo" style={{color: `var(--suit-${({S:'spade',H:'heart',D:'diamond',C:'club'} as const)[suitOf(card)]})`}}>
+        <rect x="3" y="3" width="86" height="156" rx="12" fill="var(--card-face)" />
+        <text x="43" y="64" textAnchor="middle" fill="currentColor" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="62">{rankChar(card) === 'T' ? '10' : rankChar(card)}</text>
+        <text x="43" y="133" textAnchor="middle" fill="currentColor" fontFamily="Arial, sans-serif" fontSize="66">{({S:'♠',H:'♥',D:'♦',C:'♣'} as const)[suitOf(card)]}</text>
+      </g> : null}
     </svg>
   );
 

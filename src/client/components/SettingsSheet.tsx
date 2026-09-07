@@ -15,6 +15,7 @@ import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent
 import type { ScoringMode } from '../../engine/types';
 import type { BotLevel, TableSettings } from '../../server/protocol';
 import '../styles/panels.css';
+import type { LocalPrefs } from '../net/identity';
 
 export interface SettingsSheetProps {
   settings: TableSettings;
@@ -23,7 +24,7 @@ export interface SettingsSheetProps {
   onClose: () => void;
   onChange: (patch: Partial<TableSettings>) => void;
   /** Purely local, per-browser preferences. */
-  local: { theme: 'felt' | 'daylight'; deck: 'classic' | 'four-colour'; sound: boolean; hints: boolean };
+  local: LocalPrefs;
   onLocalChange: (patch: Partial<SettingsSheetProps['local']>) => void;
 }
 
@@ -367,6 +368,9 @@ export function SettingsSheet({
             <h3 className="bo-sheet__group-title">Wygląd i wygoda</h3>
             <p className="bo-sheet__note">Te ustawienia zapisujemy tylko w tej przeglądarce.</p>
 
+            <Toggle label="Duże karty i napisy" hint="Większe oznaczenia kart i czytelniejsze przyciski." checked={local.largeCards} disabled={false} onToggle={(largeCards) => onLocalChange({ largeCards })} />
+            <Toggle label="Potwierdzaj zagranie i licytację" hint="Najpierw wybierz, potem zatwierdź. Chroni przed przypadkowym kliknięciem." checked={local.confirmMoves} disabled={false} onToggle={(confirmMoves) => onLocalChange({ confirmMoves })} />
+            <Toggle label="Spokojny widok" hint="Bez pulsowania. Zakończona lewa pozostaje dłużej na stole." checked={local.calm} disabled={false} onToggle={(calm) => onLocalChange({ calm })} />
             <Segmented
               legend="Motyw"
               value={local.theme}

@@ -31,6 +31,9 @@ export interface LocalPrefs {
   deck: DeckName;
   sound: boolean;
   hints: boolean;
+  largeCards: boolean;
+  confirmMoves: boolean;
+  calm: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -48,6 +51,9 @@ export const DEFAULT_PREFS: LocalPrefs = {
   deck: 'classic',
   sound: true,
   hints: false,
+  largeCards: true,
+  confirmMoves: true,
+  calm: true,
 };
 
 const THEMES: readonly ThemeName[] = ['felt', 'daylight'];
@@ -181,6 +187,8 @@ function applyPrefs(prefs: LocalPrefs): void {
   const root = document.documentElement;
   root.dataset.theme = prefs.theme;
   root.dataset.deck = prefs.deck;
+  root.dataset.cards = prefs.largeCards ? "large" : "standard";
+  root.dataset.calm = String(prefs.calm);
 }
 
 let prefsCache: LocalPrefs | null = null;
@@ -198,6 +206,9 @@ export function loadLocalPrefs(): LocalPrefs {
     deck: pickOption(stored, 'deck', DECKS, DEFAULT_PREFS.deck),
     sound: pickBoolean(stored, 'sound', DEFAULT_PREFS.sound),
     hints: pickBoolean(stored, 'hints', DEFAULT_PREFS.hints),
+    largeCards: pickBoolean(stored, 'largeCards', DEFAULT_PREFS.largeCards),
+    confirmMoves: pickBoolean(stored, 'confirmMoves', DEFAULT_PREFS.confirmMoves),
+    calm: pickBoolean(stored, 'calm', DEFAULT_PREFS.calm),
   };
 
   prefsCache = prefs;

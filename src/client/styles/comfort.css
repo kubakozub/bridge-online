@@ -1,0 +1,108 @@
+/* A quiet, readable card table. Preferences apply independently of the colour theme. */
+:root[data-cards='large'] {
+  --text-xs: .875rem;
+  --text-sm: 1rem;
+  --text-base: 1.0625rem;
+  --hand-overlap: .48;
+  --card-w: clamp(64px, 8vw, 104px);
+}
+.bo-card__jumbo { display: none; }
+[data-cards='large'] .bo-card__jumbo { display: inline; }
+[data-calm='true'] { --dur-trick-hold: 2800ms; --dur-trick: 250ms; }
+[data-calm='true'] .bo-seat[data-turn='true'],
+[data-calm='true'] .bo-hand__item { animation: none; }
+.bo-easy-bid { width: 100%; padding: 12px; border: 1px solid var(--border-strong); border-radius: 12px; background: var(--surface-1); color: var(--text-1); box-shadow: var(--shadow-panel); display: grid; gap: 8px; }
+.bo-easy-bid__levels, .bo-easy-bid__suits, .bo-easy-bid__specials { display: grid; gap: 6px; min-width: 0; }
+.bo-easy-bid__levels { grid-template-columns: repeat(7,minmax(0,1fr)); }
+.bo-easy-bid__suits { grid-template-columns: repeat(5,minmax(0,1fr)); }
+.bo-easy-bid__specials { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.bo-easy-bid button { font: 700 1.1rem var(--font-ui); min-height: 48px; padding: 4px; border-radius: 7px; border: 1px solid var(--border-strong); background: var(--surface-2); color: var(--text-1); cursor: pointer; touch-action: manipulation; }
+.bo-easy-bid__suits button { background: var(--card-face); font-size: 1.4rem; }
+.bo-easy-bid button[aria-pressed='true'] { outline: 3px solid var(--accent); outline-offset: -3px; background: var(--accent-quiet); }
+.bo-easy-bid button:focus-visible { outline: 3px solid var(--info); outline-offset: 2px; }
+.bo-easy-bid button:disabled { opacity: .4; cursor: default; }
+.bo-easy-bid__confirm { display: flex; align-items: center; gap: 8px; justify-content: space-between; font-size: 1rem; min-height: 48px; }
+.bo-easy-bid__confirm button { padding-inline: 12px; background: var(--accent); color: var(--text-on-accent); }
+.bo-confirm { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; border: 2px solid var(--accent); border-radius: 10px; background: var(--surface-1); }
+.bo-confirm strong { font-size: 1.15rem; }
+[data-cards='large'] .bo-btn, [data-cards='large'] .bo-rail__tab { min-height: 44px; }
+[data-cards='large'] .bo-actions__wait { font-size: 1.1rem; font-weight: 650; }
+[data-cards='large'] .bo-felt__area--top, [data-cards='large'] .bo-felt__area--bottom { grid-column: 1 / -1; }
+[data-cards='large'] .bo-seat__remove { min-width: 36px; min-height: 36px; }
+@media (min-width: 900px) {
+  [data-cards='large'] .bo-app--table .bo-felt__rail { --card-w: clamp(64px, min(8vw, calc((100cqh - 105px) / 5.3)), 116px); }
+  [data-cards='large'] .bo-app--table .bo-centre-auction { width: min(100%, 30rem); }
+  [data-cards='large'] .bo-app--table .bo-felt__surface { grid-template-columns: minmax(80px,1fr) minmax(260px,30rem) minmax(80px,1fr); }
+  [data-cards='large'] .bo-hand--vertical.bo-hand--compact:not(.bo-hand--facedown) { --bo-fan-overlap: .32; }
+}
+@media (max-width: 899px) {
+  [data-cards='large'] .bo-felt__area--bottom .bo-hand--horizontal .bo-hand__cards,
+  [data-cards='large'] .bo-felt__area--top .bo-hand--horizontal:not(.bo-hand--facedown) .bo-hand__cards { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+  [data-cards='large'] .bo-felt__area--bottom .bo-hand__item,
+  [data-cards='large'] .bo-felt__area--top .bo-hand:not(.bo-hand--facedown) .bo-hand__item { margin: 0; }
+  [data-cards='large'] .bo-felt__area--bottom .bo-card,
+  [data-cards='large'] .bo-felt__area--top .bo-hand:not(.bo-hand--facedown) .bo-card { --bo-card-w: clamp(48px, 13vw, 72px); }
+  [data-cards='large'] .bo-felt__surface { grid-template-columns: minmax(0,1fr) minmax(120px,2fr) minmax(0,1fr); }
+  [data-cards='large'] .bo-felt__area--left .bo-felt__hand:has(.bo-hand--facedown),
+  [data-cards='large'] .bo-felt__area--right .bo-felt__hand:has(.bo-hand--facedown) { display: none; }
+  .bo-easy-bid__levels { gap: 3px; }
+  .bo-easy-bid { padding: 8px; }
+}
+@media (min-width: 900px) and (max-height: 650px) {
+  .bo-app--table { height: auto; min-height: 100dvh; overflow: visible; }
+  .bo-app--table .bo-felt { min-height: 540px; }
+}
+.bo-rail-bidding { margin-bottom: 16px; }
+.bo-rail-bidding h2 { font-size: 1.1rem; margin: 0 0 12px; }
+.bo-rail__bar { flex-wrap: wrap; }
+@media (min-width:900px) {
+  .bo-app--table .bo-stage { grid-template-columns: minmax(0,1fr) 380px; }
+  .bo-app--table .bo-centre-auction { position: static; transform: none; width: 100%; max-height: 100%; overflow-y: auto; }
+  [data-cards='large'] .bo-app--table .bo-felt__surface { grid-template-columns: minmax(0,1fr) minmax(180px,2fr) minmax(0,1fr); }
+  [data-cards='large'] .bo-app--table .bo-felt__rail { --card-w: clamp(72px, min(8vw, calc((100cqh - 120px) / 4.8)), 116px); }
+  .bo-felt__center .bo-trick { --card-w: min(76px, 7vw); --card-h: calc(var(--card-w) * 1.4); }
+}
+@media (max-width:899px) {
+  [data-cards='large'] .bo-felt__surface { grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-rows: auto auto auto auto; grid-template-areas: 'top top' 'left right' 'center center' 'bottom bottom'; gap: 10px; }
+  [data-cards='large'] .bo-felt__hand:has(.bo-hand--facedown) { display: none; }
+  [data-cards='large'] .bo-felt__center { aspect-ratio: auto; min-height: 80px; padding: 8px 0; }
+  [data-cards='large'] .bo-felt__plate { width: 100%; }
+  [data-cards='large'] .bo-seat { flex-direction: row; flex-wrap: nowrap; min-height: 44px; border-radius: 10px; padding: 6px; }
+  [data-cards='large'] .bo-seat__body { min-width: 0; }
+  [data-cards='large'] .bo-seat__tags { display: none; }
+  [data-cards='large'] .bo-seat__name { max-width: none; }
+  [data-cards='large'] .bo-seat__badge { width: 24px; height: 24px; }
+  [data-cards='large'] .bo-seat__avatar { display: none; }
+  [data-cards='large'] .bo-felt__area--left .bo-felt__hand,
+  [data-cards='large'] .bo-felt__area--right .bo-felt__hand { width: 100%; overflow: visible; }
+  [data-cards='large'] .bo-felt__area .bo-hand:not(.bo-hand--facedown) .bo-hand__cards { display: flex; flex-wrap: wrap; gap: 4px; }
+  [data-cards='large'] .bo-felt__area .bo-hand:not(.bo-hand--facedown) .bo-hand__item { margin: 0; }
+  [data-cards='large'] .bo-felt__area .bo-hand:not(.bo-hand--facedown) .bo-card { --bo-card-w: clamp(48px,13vw,72px); }
+  .bo-rail__bar { flex-wrap: nowrap; padding: 6px; gap: 2px; }
+  .bo-rail__tab { padding: 6px; gap: 4px; font-size: .875rem; }
+  .bo-rail__tablist { flex: 1; }
+  .bo-topbar { gap: 6px; padding: 8px; }
+  .bo-topbar__brand { font-size: 1rem; }
+}
+.bo-actions { position: relative; }
+.bo-confirm { position: absolute; inset-inline: 0; bottom: 0; z-index: var(--z-hud); box-shadow: var(--shadow-panel); }
+@media (min-width:900px) {
+  [data-cards='large'] .bo-app--table .bo-felt__surface { grid-template-rows: auto minmax(150px,1fr) auto; }
+  .bo-felt__center .bo-trick { width: 160px; --card-w: 52px; --card-h: 72.8px; pointer-events: none; }
+  .bo-felt__center .bo-trick-area { height: 100%; align-content: center; }
+  [data-cards='large'] .bo-app--table .bo-felt__rail { --card-w: clamp(72px, min(8vw, calc((100cqh - 140px) / 4.8)), 116px); }
+}
+@media(min-width:900px){[data-cards='large'] .bo-hand--horizontal .bo-hand__cards{padding-block:4px}[data-cards='large'] .bo-felt__area{gap:4px}}
+.bo-hand__count{font:600 .9rem var(--font-ui);padding:4px 8px;border-radius:6px;background:var(--surface-1);color:var(--text-1)}
+.bo-last-trick { margin-bottom: 16px; border: 1px solid var(--border-strong); border-radius: 10px; padding: 10px; }
+.bo-last-trick summary { min-height: 44px; padding: 10px 0; cursor: pointer; font-weight: 700; }
+.bo-last-trick>div { display: flex; gap: 10px; justify-content: center; }
+.bo-last-trick figure { margin: 0; text-align: center; }
+.bo-last-trick figcaption { padding-bottom: 6px; font-weight: 700; }
+@media(min-width:900px){
+  [data-cards='large'] .bo-seat__body{flex-direction:row;align-items:center;gap:8px}
+  [data-cards='large'] .bo-seat__tag--bot{display:none}
+  [data-cards='large'] .bo-app--table .bo-felt__surface{grid-template-rows:auto minmax(174px,1fr) auto}
+  .bo-felt__center{padding:0}
+  .bo-trick__winner{top:-8px;transform:translate(-50%,-100%)}
+}

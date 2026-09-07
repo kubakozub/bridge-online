@@ -23,6 +23,7 @@ type CardVars = CSSProperties & Record<string, string | number>;
 export interface HandProps {
   /** The cards to draw. Re-sorted with `sortHand` so the suit gaps always land correctly. */
   cards: Card[];
+  selected?: Card | null;
   /** How many backs to draw when `faceDown`. Defaults to `cards.length`. */
   count?: number;
   faceDown?: boolean;
@@ -62,6 +63,7 @@ function focusItem(item: HTMLLIElement | null): void {
 
 export function Hand({
   cards,
+  selected,
   count,
   faceDown = false,
   orientation,
@@ -149,7 +151,7 @@ export function Hand({
     <div className={rootClasses}>
       <ul className="bo-hand__cards" role="group" aria-label={groupLabel} onKeyDown={handleKeyDown}>
         {faceDown
-          ? Array.from({ length: backCount }, (_unused, index) => (
+          ? Array.from({ length: backCount > 0 ? 1 : 0 }, (_unused, index) => (
               <li
                 key={index}
                 className="bo-hand__item"
@@ -177,6 +179,7 @@ export function Hand({
                 >
                   <PlayingCard
                     card={card}
+                    selected={selected === card}
                     size={size}
                     playable={canInteract && isLegal}
                     dimmed={canInteract && !isLegal}
@@ -187,6 +190,7 @@ export function Hand({
               );
             })}
       </ul>
+      {faceDown && backCount > 0 ? <span className="bo-hand__count" aria-hidden="true">{backCount} kart</span> : null}
     </div>
   );
 }
