@@ -1,204 +1,207 @@
 # Bridge Online
 
-> **Gra na żywo: [brydz.uk](https://brydz.uk)**
-> Otwórz na dwóch komputerach: jedna osoba tworzy stół, druga wchodzi sześcioznakowym kodem.
+> **Live: [brydz.uk](https://brydz.uk)**
+> Open it on two computers: one person creates a table, the other joins with a six
+> character code.
 
-Brydż porównawczy przez przeglądarkę **dla dwóch osób w dwóch różnych miejscach**. Jedna osoba
-tworzy stół, druga wchodzi sześcioznakowym kodem. Wolne krzesła obsadzają roboty, więc do gry
-wystarczą dwie osoby: nie cztery.
+Duplicate bridge in the browser **for two people in two different places**. One person
+creates a table, the other joins with a six character code. Robots take the empty seats,
+so two people are enough to play, not four.
 
-Całość stoi na Cloudflare: Worker serwuje klienta, a każdy stół to jeden Durable Object, który
-jest jedynym właścicielem rozdania.
+It runs entirely on Cloudflare: a Worker serves the client, and each table is a single
+Durable Object that is the only owner of the deal.
 
----
+## What it does
 
-## Co potrafi
+**The full rules of bridge, not a simplification**
 
-**Pełne reguły brydża, nie uproszczenia**
+- Bidding with the complete legality rules: sufficiency of a bid, a double only against
+  an opponent, a redouble only by the doubled side, and the auction closing after three
+  passes.
+- Declarer determined by law: the declarer is whichever member of the partnership
+  **first** named the suit of the final contract, not whoever bid it last.
+- Play: following suit is compulsory, ruffs are handled, the trick goes to the highest
+  trump or else the highest card of the suit led, and declarer plays dummy's cards.
+- Duplicate scoring: part scores, game and slam bonuses, the insult bonus when doubled,
+  the full doubled undertrick ladder, and conversion to IMPs using the WBF table.
+- Dealer and vulnerability rotate on the standard 16 board duplicate cycle.
+- Claims with opponent acceptance, undo by agreement, and board records in PBN.
 
-- Licytacja z kompletem reguł legalności: wystarczalność odzywki, kontra tylko na przeciwnika,
-  rekontra tylko przez strona skontrowaną, zamknięcie po trzech pasach.
-- Wyznaczenie rozgrywającego wg prawa: rozgrywa ten z pary, kto **pierwszy** wymienił kolor
-  końcowego kontraktu: nie ten, kto zalicytował ostatni.
-- Rozgrywka: przymus dokładania do koloru, przebitki, bierze lewę najwyższy atut albo najwyższa
-  karta koloru wistu, rozgrywający gra kartami dziadka.
-- Punktacja turniejowa: zapis częściowy, dopłaty za partię i szlemiki, premia „za obrazę”
-  przy kontrze, pełna drabinka wpadek skontrowanych, przeliczenie na IMP-y wg tabeli WBF.
-- Rozdający i założenia zmieniają się wg 16-rozdaniowego cyklu turniejowego.
-- Zapowiedź lew (claim) z akceptacją przeciwników, cofnięcie ruchu za zgodą, zapis rozdań w PBN.
+**Two people over the network**
 
-**Gra we dwoje przez sieć**
+- The server is authoritative: a full deal **never** leaves the Durable Object. Each
+  player receives their own censored view of the state, so another player's cards cannot
+  be read out of the Network tab.
+- Reconnect is supported: closing a laptop does not end the board. On rejoining you are
+  returned to your seat with the same cards.
+- If somebody is gone for more than 45 seconds, a robot covers their seat temporarily so
+  the other person is not left waiting.
+- Optional per move clock, table chat, and spectators.
 
-- Autorytatywny serwer: pełne rozdania **nigdy** nie opuszczają Durable Objectu. Każdy gracz
-  dostaje własną, ocenzurowaną wersję stanu: cudzych kart nie da się podejrzeć w zakładce Sieć.
-- Powrót po rozłączeniu: zamknięcie laptopa nie kończy rozdania. Po ponownym wejściu wracasz na
-  swoje miejsce z tymi samymi kartami.
-- Jeśli ktoś zniknie na dłużej niż 45 sekund, jego miejsce tymczasowo obsługuje robot, żeby
-  druga osoba nie stała w miejscu.
-- Opcjonalny zegar na ruch, czat przy stole, obserwatorzy.
+**Robots**
 
-**Roboty**
+Three levels (novice, intermediate, advanced). They bid SAYC (five card majors, 1NT 15
+to 17, Stayman, transfers, takeout doubles) and in the play they use standard leads and
+defence plus an endgame search.
 
-Trzy poziomy (nowicjusz / średni / zaawansowany). Licytują w konwencji SAYC (piątkowe starsze,
-1BA 15 to 17, Stayman, transfery, kontra wywoławcza), a w rozgrywce stosują standardowe zasady
-wistu i obrony plus przeszukanie końcówki.
-
----
-
-## Uruchomienie lokalne
+## Running it locally
 
 ```bash
 npm install
 ```
 
-Klient i Worker startują razem:
+The client and the Worker start together:
 
 ```bash
 npm run dev
 ```
 
-Vite stoi na `http://localhost:5173` i przekazuje `/api/*` (razem z WebSocketem) do `wrangler dev`
-na porcie 8787.
+Vite serves on `http://localhost:5173` and forwards `/api/*`, the WebSocket included, to
+`wrangler dev` on port 8787.
 
-Żeby zagrać samemu ze sobą, otwórz ten sam link w oknie normalnym i w oknie prywatnym: to dwie
-osobne tożsamości, więc siądziesz na dwóch różnych krzesłach.
+To play against yourself, open the same link in a normal window and in a private window.
+Those are two separate identities, so you will be seated in two different chairs.
 
-Testy i kontrola typów:
+Tests and type checking:
 
 ```bash
 npm test
 npm run typecheck
 ```
 
-### Jeśli `wrangler dev` nie startuje
+### If `wrangler dev` will not start
 
-Na tej maszynie `wrangler dev` przewraca się z komunikatem `spawn UNKNOWN`, bo **Windows App
-Control blokuje `workerd.exe`**: silnik uruchomieniowy Cloudflare, który wrangler rozpakowuje
-do `node_modules`. Sprawdzisz to tak:
+On one development machine `wrangler dev` fails with `spawn UNKNOWN`, because **Windows
+App Control blocks `workerd.exe`**, the Cloudflare runtime that wrangler unpacks into
+`node_modules`. To confirm that is the cause:
 
 ```powershell
 & ".\node_modules\@cloudflare\workerd-windows-64\bin\workerd.exe" --version
 ```
 
-Jeśli odpowie „Zasady kontroli aplikacji zablokowały ten plik", to polityka bezpieczeństwa
-komputera, nie błąd projektu: bundling działa (`npx wrangler deploy --dry-run` przechodzi),
-więc wdrożenie na Cloudflare i tak się uda. Do pracy lokalnej masz dwie drogi:
+If the answer is that application control policy blocked the file, that is the machine's
+security policy rather than a fault in the project. Bundling still works
+(`npx wrangler deploy --dry-run` passes), so deploying to Cloudflare succeeds regardless.
+For local work there are two routes:
 
-- `npm run dev:client`: sam interfejs na Vite (bez serwera gry, ale cała warstwa wizualna
-  działa, łącznie z podglądem talii pod `/dev/cards.html`);
-- `npm run dev:remote`: interfejs lokalnie z hot-reloadem, ale `/api` i WebSocket kierowane na
-  **wdrożonego** Workera, czyli praca na prawdziwej grze bez lokalnego `workerd`. Inny cel
-  wskażesz zmienną:
+- `npm run dev:client`: the interface alone on Vite. There is no game server, but the
+  whole visual layer works, including the deck preview at `/dev/cards.html`.
+- `npm run dev:remote`: the interface locally with hot reload, while `/api` and the
+  WebSocket are directed at a **deployed** Worker. That is work against the real game
+  with no local `workerd`. Point it elsewhere with an environment variable:
 
   ```bash
   BRIDGE_REMOTE=https://brydz.uk npm run dev:remote
   ```
 
-  > Uwaga: tego trybu nie udało się przetestować end-to-end na tej maszynie: proces Vite nie
-  > dostał połączenia wychodzącego (DNS wracał z puli discard `100::`). Sam mechanizm proxy jest
-  > zwykłą konfiguracją Vite, ale traktuj go jako niesprawdzony, dopóki nie odpalisz go u siebie.
+  > Note: this mode has not been tested end to end. On the machine where it was tried the
+  > Vite process got no outbound connection (DNS returned from the discard pool `100::`).
+  > The proxy mechanism itself is ordinary Vite configuration, but treat it as unverified
+  > until it runs for you.
 
-- `npm test`: logika stołu jest w całości pokryta testami, które uruchamiają Durable Object na
-  atrapach środowiska Cloudflare (`tests/table.integration.test.ts`), więc nie potrzebują
-  `workerd`.
+- `npm test`: the table logic is fully covered by tests that run the Durable Object
+  against stubs of the Cloudflare environment (`tests/table.integration.test.ts`), so
+  they do not need `workerd` at all.
 
-Docelowo poproś administratora o dopuszczenie `workerd.exe` w App Control albo uruchom projekt
-na maszynie bez tej polityki.
+The durable fix is to have `workerd.exe` allowed in App Control, or to run the project on
+a machine without that policy.
 
----
+## Deploying to Cloudflare
 
-## Wdrożenie na Cloudflare
-
-Potrzebne raz: zalogowanie wranglera.
+Needed once, to log wrangler in:
 
 ```bash
 npx wrangler login
 ```
 
-Albo, w CI, przez zmienne środowiskowe `CLOUDFLARE_API_TOKEN` i `CLOUDFLARE_ACCOUNT_ID`
-(token z uprawnieniami *Workers Scripts: Edit* oraz *Workers Durable Objects: Edit*).
+Or, in CI, through the `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` environment
+variables, with a token holding *Workers Scripts: Edit* and *Workers Durable Objects:
+Edit*.
 
-Potem:
+Then:
 
 ```bash
 npm run deploy
 ```
 
-To buduje klienta do `dist/client` i wypycha Workera razem z zasobami statycznymi. Wrangler
-wypisze adres w postaci `https://bridge-online.<twoja-subdomena>.workers.dev`.
+That builds the client into `dist/client` and pushes the Worker together with its static
+assets. Wrangler prints an address of the form
+`https://bridge-online.<your-subdomain>.workers.dev`.
 
-Durable Objects z magazynem SQLite działają na planie darmowym: migracja `v1` w
-`wrangler.jsonc` tworzy klasę `TableDurableObject` przy pierwszym wdrożeniu.
+Durable Objects with SQLite storage work on the free plan: migration `v1` in
+`wrangler.jsonc` creates the `TableDurableObject` class on the first deploy.
 
-### Własna domena
+### A custom domain
 
-W `wrangler.jsonc` dopisz:
+Add this to `wrangler.jsonc`:
 
 ```jsonc
-"routes": [{ "pattern": "brydz.twojadomena.pl", "custom_domain": true }]
+"routes": [{ "pattern": "bridge.yourdomain.com", "custom_domain": true }]
 ```
 
----
-
-## Architektura
+## Architecture
 
 ```
-przeglądarka A ─┐
-                ├─ WebSocket ─→ Worker ─→ Durable Object „ABC123”
-przeglądarka B ─┘                         (jedyna kopia rozdania na świecie)
+browser A ─┐
+           ├─ WebSocket ─→ Worker ─→ Durable Object "ABC123"
+browser B ─┘                         (the only copy of the deal anywhere)
 ```
 
 ```
 src/
-  engine/     czysty silnik reguł, bez I/O, bez losowości poza jawnym ziarnem
-    types.ts    kontrakt domenowy; format sieciowy = format silnika ("SA", "3N", "P")
-    cards.ts    talia, tasowanie z ziarna, ocena ręki, PBN
-    deal.ts     rozdający i założenia wg numeru rozdania
-    auction.ts  automat licytacji, wyznaczenie rozgrywającego
-    play.ts     legalność zagrania, rozstrzyganie lew, widoczność rąk
-    scoring.ts  punktacja turniejowa, IMP-y, maksy
-    game.ts     JEDYNE wejście zmieniające stan: applyAction(state, action)
-  bots/       roboty: licytacja SAYC + rozgrywka heurystyczna
+  engine/     the pure rules engine: no I/O, no randomness beyond an explicit seed
+    types.ts    the domain contract; the wire format is the engine format ("SA", "3N", "P")
+    cards.ts    deck, seeded shuffle, hand evaluation, PBN
+    deal.ts     dealer and vulnerability by board number
+    auction.ts  the bidding state machine, determining declarer
+    play.ts     legality of a card, resolving tricks, hand visibility
+    scoring.ts  duplicate scoring, IMPs, matchpoints
+    game.ts     the ONLY entry point that changes state: applyAction(state, action)
+  bots/       robots: SAYC bidding plus heuristic card play
   server/
-    protocol.ts wiadomości klient↔serwer
-    table.ts    Durable Object: stan stołu, cenzura kart, zegary, roboty
-    index.ts    router Workera + zasoby statyczne
-  client/     React 18, bez dodatkowych zależności
+    protocol.ts client and server messages
+    table.ts    Durable Object: table state, card censoring, clocks, robots
+    index.ts    the Worker router plus static assets
+  client/     React 18, no additional dependencies
 ```
 
-Zasada, która trzyma to w kupie: **stan zmienia się wyłącznie przez `applyAction`**, funkcję
-czystą, która zwraca nowy stan albo błąd i nigdy nie rzuca wyjątkiem. Durable Object jest cienką
-warstwą wokół niej: dzięki temu regułę brydża da się przetestować bez sieci, a test fuzzowy
-rozgrywa 150 pełnych rozdań, sprawdzając po każdym ruchu, że żadna karta nie zniknęła.
+The rule that holds it together: **state changes only through `applyAction`**, a pure
+function that returns either a new state or an error and never throws. The Durable Object
+is a thin layer around it. That is what makes the rules of bridge testable without a
+network, and it lets a fuzz test play 150 complete boards while checking after every move
+that no card has vanished.
 
----
+## Graphics
 
-## Grafika
-
-Talia w repozytorium jest generowana proceduralnie:
+The deck in the repository is generated procedurally:
 
 ```bash
 npm run cards
 ```
 
-Podgląd wszystkich kart: `/dev/cards.html` przy działającym serwerze deweloperskim.
+A preview of every card is at `/dev/cards.html` while the development server runs.
 
-Docelowa, rysowana grafika powstaje z promptu w
-[`docs/CLAUDE-DESIGN-PROMPT.md`](docs/CLAUDE-DESIGN-PROMPT.md). Po otrzymaniu plików:
+The drawn artwork is produced from the prompt in
+[`docs/CLAUDE-DESIGN-PROMPT.md`](docs/CLAUDE-DESIGN-PROMPT.md). Once the files arrive:
 
 ```bash
-# podmień public/cards/sprite.svg, potem:
+# replace public/cards/sprite.svg, then:
 node scripts/embed-sprite.mjs
 ```
 
-Skrypt sprawdza kontrakt integracyjny (52 symbole o właściwych ID, `viewBox` `0 0 240 336`, brak
-skryptów i odwołań zewnętrznych) i odmawia wbudowania grafiki, która go łamie.
+The script checks the integration contract (52 symbols with the right IDs, a `viewBox` of
+`0 0 240 336`, no scripts and no external references) and refuses to embed artwork that
+breaks it.
 
----
+## Limitations worth knowing
 
-## Ograniczenia, o których warto wiedzieć
+- The robots play correctly and sensibly, but they are not a GIB class engine: they do
+  not compute double dummy play outside the endgame.
+- Rubber scoring is simplified to the split above and below the line. Duplicate mode and
+  IMPs are complete.
+- Matchpoints are computed against this one table, so they only start to mean something
+  once several tables are recorded.
 
-- Roboty grają poprawnie i sensownie, ale nie są silnikiem klasy GIB: nie liczą rozgrywki
-  podwójnie martwej poza końcówką.
-- Punktacja „rubber” jest uproszczona do podziału nad/pod kreską; tryb turniejowy i IMP są pełne.
-- Maksy liczone są względem tego jednego stołu, więc mają sens dopiero przy zapisie wielu stołów.
+## For Polish players
+
+Gra jest po polsku i działa na [brydz.uk](https://brydz.uk).
