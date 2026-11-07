@@ -1,11 +1,11 @@
 # Bridge Online
 
 > **Gra na żywo: [brydz.uk](https://brydz.uk)**
-> Otwórz na dwóch komputerach — jedna osoba tworzy stół, druga wchodzi sześcioznakowym kodem.
+> Otwórz na dwóch komputerach: jedna osoba tworzy stół, druga wchodzi sześcioznakowym kodem.
 
 Brydż porównawczy przez przeglądarkę **dla dwóch osób w dwóch różnych miejscach**. Jedna osoba
 tworzy stół, druga wchodzi sześcioznakowym kodem. Wolne krzesła obsadzają roboty, więc do gry
-wystarczą dwie osoby — nie cztery.
+wystarczą dwie osoby: nie cztery.
 
 Całość stoi na Cloudflare: Worker serwuje klienta, a każdy stół to jeden Durable Object, który
 jest jedynym właścicielem rozdania.
@@ -19,7 +19,7 @@ jest jedynym właścicielem rozdania.
 - Licytacja z kompletem reguł legalności: wystarczalność odzywki, kontra tylko na przeciwnika,
   rekontra tylko przez strona skontrowaną, zamknięcie po trzech pasach.
 - Wyznaczenie rozgrywającego wg prawa: rozgrywa ten z pary, kto **pierwszy** wymienił kolor
-  końcowego kontraktu — nie ten, kto zalicytował ostatni.
+  końcowego kontraktu: nie ten, kto zalicytował ostatni.
 - Rozgrywka: przymus dokładania do koloru, przebitki, bierze lewę najwyższy atut albo najwyższa
   karta koloru wistu, rozgrywający gra kartami dziadka.
 - Punktacja turniejowa: zapis częściowy, dopłaty za partię i szlemiki, premia „za obrazę”
@@ -30,7 +30,7 @@ jest jedynym właścicielem rozdania.
 **Gra we dwoje przez sieć**
 
 - Autorytatywny serwer: pełne rozdania **nigdy** nie opuszczają Durable Objectu. Każdy gracz
-  dostaje własną, ocenzurowaną wersję stanu — cudzych kart nie da się podejrzeć w zakładce Sieć.
+  dostaje własną, ocenzurowaną wersję stanu: cudzych kart nie da się podejrzeć w zakładce Sieć.
 - Powrót po rozłączeniu: zamknięcie laptopa nie kończy rozdania. Po ponownym wejściu wracasz na
   swoje miejsce z tymi samymi kartami.
 - Jeśli ktoś zniknie na dłużej niż 45 sekund, jego miejsce tymczasowo obsługuje robot, żeby
@@ -40,7 +40,7 @@ jest jedynym właścicielem rozdania.
 **Roboty**
 
 Trzy poziomy (nowicjusz / średni / zaawansowany). Licytują w konwencji SAYC (piątkowe starsze,
-1BA 15–17, Stayman, transfery, kontra wywoławcza), a w rozgrywce stosują standardowe zasady
+1BA 15 to 17, Stayman, transfery, kontra wywoławcza), a w rozgrywce stosują standardowe zasady
 wistu i obrony plus przeszukanie końcówki.
 
 ---
@@ -60,7 +60,7 @@ npm run dev
 Vite stoi na `http://localhost:5173` i przekazuje `/api/*` (razem z WebSocketem) do `wrangler dev`
 na porcie 8787.
 
-Żeby zagrać samemu ze sobą, otwórz ten sam link w oknie normalnym i w oknie prywatnym — to dwie
+Żeby zagrać samemu ze sobą, otwórz ten sam link w oknie normalnym i w oknie prywatnym: to dwie
 osobne tożsamości, więc siądziesz na dwóch różnych krzesłach.
 
 Testy i kontrola typów:
@@ -73,7 +73,7 @@ npm run typecheck
 ### Jeśli `wrangler dev` nie startuje
 
 Na tej maszynie `wrangler dev` przewraca się z komunikatem `spawn UNKNOWN`, bo **Windows App
-Control blokuje `workerd.exe`** — silnik uruchomieniowy Cloudflare, który wrangler rozpakowuje
+Control blokuje `workerd.exe`**: silnik uruchomieniowy Cloudflare, który wrangler rozpakowuje
 do `node_modules`. Sprawdzisz to tak:
 
 ```powershell
@@ -81,12 +81,12 @@ do `node_modules`. Sprawdzisz to tak:
 ```
 
 Jeśli odpowie „Zasady kontroli aplikacji zablokowały ten plik", to polityka bezpieczeństwa
-komputera, nie błąd projektu — bundling działa (`npx wrangler deploy --dry-run` przechodzi),
+komputera, nie błąd projektu: bundling działa (`npx wrangler deploy --dry-run` przechodzi),
 więc wdrożenie na Cloudflare i tak się uda. Do pracy lokalnej masz dwie drogi:
 
-- `npm run dev:client` — sam interfejs na Vite (bez serwera gry, ale cała warstwa wizualna
+- `npm run dev:client`: sam interfejs na Vite (bez serwera gry, ale cała warstwa wizualna
   działa, łącznie z podglądem talii pod `/dev/cards.html`);
-- `npm run dev:remote` — interfejs lokalnie z hot-reloadem, ale `/api` i WebSocket kierowane na
+- `npm run dev:remote`: interfejs lokalnie z hot-reloadem, ale `/api` i WebSocket kierowane na
   **wdrożonego** Workera, czyli praca na prawdziwej grze bez lokalnego `workerd`. Inny cel
   wskażesz zmienną:
 
@@ -94,11 +94,11 @@ więc wdrożenie na Cloudflare i tak się uda. Do pracy lokalnej masz dwie drogi
   BRIDGE_REMOTE=https://brydz.uk npm run dev:remote
   ```
 
-  > Uwaga: tego trybu nie udało się przetestować end-to-end na tej maszynie — proces Vite nie
+  > Uwaga: tego trybu nie udało się przetestować end-to-end na tej maszynie: proces Vite nie
   > dostał połączenia wychodzącego (DNS wracał z puli discard `100::`). Sam mechanizm proxy jest
   > zwykłą konfiguracją Vite, ale traktuj go jako niesprawdzony, dopóki nie odpalisz go u siebie.
 
-- `npm test` — logika stołu jest w całości pokryta testami, które uruchamiają Durable Object na
+- `npm test`: logika stołu jest w całości pokryta testami, które uruchamiają Durable Object na
   atrapach środowiska Cloudflare (`tests/table.integration.test.ts`), więc nie potrzebują
   `workerd`.
 
@@ -127,7 +127,7 @@ npm run deploy
 To buduje klienta do `dist/client` i wypycha Workera razem z zasobami statycznymi. Wrangler
 wypisze adres w postaci `https://bridge-online.<twoja-subdomena>.workers.dev`.
 
-Durable Objects z magazynem SQLite działają na planie darmowym — migracja `v1` w
+Durable Objects z magazynem SQLite działają na planie darmowym: migracja `v1` w
 `wrangler.jsonc` tworzy klasę `TableDurableObject` przy pierwszym wdrożeniu.
 
 ### Własna domena
@@ -150,7 +150,7 @@ przeglądarka B ─┘                         (jedyna kopia rozdania na świeci
 
 ```
 src/
-  engine/     czysty silnik reguł — bez I/O, bez losowości poza jawnym ziarnem
+  engine/     czysty silnik reguł, bez I/O, bez losowości poza jawnym ziarnem
     types.ts    kontrakt domenowy; format sieciowy = format silnika ("SA", "3N", "P")
     cards.ts    talia, tasowanie z ziarna, ocena ręki, PBN
     deal.ts     rozdający i założenia wg numeru rozdania
@@ -168,7 +168,7 @@ src/
 
 Zasada, która trzyma to w kupie: **stan zmienia się wyłącznie przez `applyAction`**, funkcję
 czystą, która zwraca nowy stan albo błąd i nigdy nie rzuca wyjątkiem. Durable Object jest cienką
-warstwą wokół niej — dzięki temu regułę brydża da się przetestować bez sieci, a test fuzzowy
+warstwą wokół niej: dzięki temu regułę brydża da się przetestować bez sieci, a test fuzzowy
 rozgrywa 150 pełnych rozdań, sprawdzając po każdym ruchu, że żadna karta nie zniknęła.
 
 ---
@@ -198,7 +198,7 @@ skryptów i odwołań zewnętrznych) i odmawia wbudowania grafiki, która go ła
 
 ## Ograniczenia, o których warto wiedzieć
 
-- Roboty grają poprawnie i sensownie, ale nie są silnikiem klasy GIB — nie liczą rozgrywki
+- Roboty grają poprawnie i sensownie, ale nie są silnikiem klasy GIB: nie liczą rozgrywki
   podwójnie martwej poza końcówką.
 - Punktacja „rubber” jest uproszczona do podziału nad/pod kreską; tryb turniejowy i IMP są pełne.
 - Maksy liczone są względem tego jednego stołu, więc mają sens dopiero przy zapisie wielu stołów.
